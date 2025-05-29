@@ -61,9 +61,9 @@ module AHB2LED(
       end
     else if(rHSEL & rHWRITE & rHTRANS[1])
     begin
-    case (rHADDR[0])
-         1'b0: rLED <= mask ^ HWDATA[7:0];
-         1'b1: mask <= HWDATA[7:0];
+    case (rHADDR[3:0])
+         8'h00: rLED <= ~mask & HWDATA[7:0];
+         8'h04: mask <= HWDATA[7:0];
      endcase
      end
   end

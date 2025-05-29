@@ -15,13 +15,24 @@ ARM Macro Assembler    Page 1
     7 00000000         
     8 00000000         ; Vector Table Mapped to Address 0 at Reset
     9 00000000         
-   10 00000000                 PRESERVE8
-   11 00000000                 THUMB
+   10 00000000                 PRESERVE8                    ;  Ensures 8-byte a
+                                                            lignment of the sta
+                                                            ck
+   11 00000000                 THUMB                        ; Assembles instruc
+                                                            tions in Thumb mode
+                                                            
    12 00000000         
    13 00000000                 AREA             RESET, DATA, READONLY ; First 3
                                                             2 WORDS is VECTOR T
-                                                            ABLE
-   14 00000000                 EXPORT           __Vectors
+                                                            ABLE, Defines a rea
+                                                            d-only data section
+                                                             named RESET — used
+                                                             for the vector tab
+                                                            le
+   14 00000000                 EXPORT           __Vectors   ; Exports the symbo
+                                                            l __Vectors so it c
+                                                            an be linked at add
+                                                            ress 0
    15 00000000         
    16 00000000 00003FFC 
                        __Vectors
@@ -52,6 +63,12 @@ ARM Macro Assembler    Page 1
    39 00000050 00000000        DCD              0
    40 00000054 00000000        DCD              0
    41 00000058 00000000        DCD              0
+
+
+
+ARM Macro Assembler    Page 2 
+
+
    42 0000005C 00000000        DCD              0
    43 00000060 00000000        DCD              0
    44 00000064 00000000        DCD              0
@@ -63,46 +80,47 @@ ARM Macro Assembler    Page 1
    50 0000007C 00000000        DCD              0
    51 00000080         
    52 00000080                 AREA             |.text|, CODE, READONLY
-
-
-
-ARM Macro Assembler    Page 2 
-
-
    53 00000000         ;Reset Handler
    54 00000000         Reset_Handler
                                PROC
    55 00000000                 GLOBAL           Reset_Handler
    56 00000000                 ENTRY
    57 00000000         
-   58 00000000 4906    AGAIN   LDR              R1, =0x50000000 ;Write to LED w
-                                                            ith value 0x55
-   59 00000002 4807            LDR              R0, =0x55
+   58 00000000 4907    MASK_LOW
+                               LDR              R1, =0x50000004
+   59 00000002 4808            LDR              R0, =0x0F
    60 00000004 6008            STR              R0, [R1]
    61 00000006         
-   62 00000006         
-   63 00000006         
-   64 00000006 4807            LDR              R0, =0x2FFFFF ;Delay
-   65 00000008 1E40    Loop    SUBS             R0,R0,#1
-   66 0000000A D1FD            BNE              Loop
+   62 00000006 4908    AGAIN   LDR              R1, =0x50000000 ;Write to LED w
+                                                            ith value 0x55
+   63 00000008 4808            LDR              R0, =0x55
+   64 0000000A 6008            STR              R0, [R1]
+   65 0000000C         
+   66 0000000C         
    67 0000000C         
-   68 0000000C 4903            LDR              R1, =0x50000000 ;Write to LED w
-                                                            ith value 0xAA
-   69 0000000E 4806            LDR              R0, =0xAA
-   70 00000010 6008            STR              R0, [R1]
+   68 0000000C 4808            LDR              R0, =0x2FFFFF ;Delay
+   69 0000000E 1E40    Loop    SUBS             R0,R0,#1
+   70 00000010 D1FD            BNE              Loop
    71 00000012         
-   72 00000012 4804            LDR              R0, =0x2FFFFF ;Delay
-   73 00000014 1E40    Loop1   SUBS             R0,R0,#1
-   74 00000016 D1FD            BNE              Loop1
+   72 00000012 4905            LDR              R1, =0x50000000 ;Write to LED w
+                                                            ith value 0xAA
+   73 00000014 4807            LDR              R0, =0xAA
+   74 00000016 6008            STR              R0, [R1]
    75 00000018         
-   76 00000018 E7F2            B                AGAIN
-   77 0000001A                 ENDP
-   78 0000001A         
-   79 0000001A         
-   80 0000001A 00 00           ALIGN            4           ; Align to a word b
+   76 00000018 4805            LDR              R0, =0x2FFFFF ;Delay
+   77 0000001A 1E40    Loop1   SUBS             R0,R0,#1
+   78 0000001C D1FD            BNE              Loop1
+   79 0000001E         
+   80 0000001E E7F2            B                AGAIN
+   81 00000020                 ENDP
+   82 00000020         
+   83 00000020         
+   84 00000020                 ALIGN            4           ; Align to a word b
                                                             oundary
-   81 0000001C         
-   82 0000001C                 END
+   85 00000020         
+   86 00000020                 END
+              50000004 
+              0000000F 
               50000000 
               00000055 
               002FFFFF 
@@ -110,6 +128,12 @@ ARM Macro Assembler    Page 2
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M0 --apcs=interw
 ork --depend=.\objects\cm0dsasm.d -o.\objects\cm0dsasm.o -I.\RTE\_Target_1 -IC:
 \Users\imeas\AppData\Local\Arm\Packs\ARM\CMSIS\6.1.0\CMSIS\Core\Include -IC:\Us
+
+
+
+ARM Macro Assembler    Page 3 
+
+
 ers\imeas\AppData\Local\Arm\Packs\ARM\Cortex_DFP\1.1.0\Device\ARMCM0\Include --
 predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 542" --predefine=
 "ARMCM0 SETA 1" --predefine="_RTE_ SETA 1" --list=.\listings\cm0dsasm.lst src\c
@@ -151,30 +175,38 @@ Symbol: .text
    Uses
       None
 Comment: .text unused
-AGAIN 00000000
+AGAIN 00000006
 
 Symbol: AGAIN
    Definitions
-      At line 58 in file src\cm0dsasm.s
+      At line 62 in file src\cm0dsasm.s
    Uses
-      At line 76 in file src\cm0dsasm.s
+      At line 80 in file src\cm0dsasm.s
 Comment: AGAIN used once
-Loop 00000008
+Loop 0000000E
 
 Symbol: Loop
    Definitions
-      At line 65 in file src\cm0dsasm.s
+      At line 69 in file src\cm0dsasm.s
    Uses
-      At line 66 in file src\cm0dsasm.s
+      At line 70 in file src\cm0dsasm.s
 Comment: Loop used once
-Loop1 00000014
+Loop1 0000001A
 
 Symbol: Loop1
    Definitions
-      At line 73 in file src\cm0dsasm.s
+      At line 77 in file src\cm0dsasm.s
    Uses
-      At line 74 in file src\cm0dsasm.s
+      At line 78 in file src\cm0dsasm.s
 Comment: Loop1 used once
+MASK_LOW 00000000
+
+Symbol: MASK_LOW
+   Definitions
+      At line 58 in file src\cm0dsasm.s
+   Uses
+      None
+Comment: MASK_LOW unused
 Reset_Handler 00000000
 
 Symbol: Reset_Handler
@@ -184,5 +216,5 @@ Symbol: Reset_Handler
       At line 17 in file src\cm0dsasm.s
       At line 55 in file src\cm0dsasm.s
 
-5 symbols
-343 symbols in table
+6 symbols
+344 symbols in table

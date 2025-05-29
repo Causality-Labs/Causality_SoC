@@ -29,8 +29,8 @@
     Program header entries: 1
     Section header entries: 11
 
-    Program header offset: 1752 (0x000006d8)
-    Section header offset: 1784 (0x000006f8)
+    Program header offset: 1768 (0x000006e8)
+    Section header offset: 1800 (0x00000708)
 
     Section header string table index: 10
 
@@ -42,8 +42,8 @@
     File Offset   : 52 (0x34)
     Virtual Addr  : 0x00000000
     Physical Addr : 0x00000000
-    Size in file  : 172 bytes (0xac)
-    Size in memory: 172 bytes (0xac)
+    Size in file  : 184 bytes (0xb8)
+    Size in memory: 184 bytes (0xb8)
     Flags         : PF_X + PF_R + PF_ARM_ENTRY (0x80000005)
     Alignment     : 4
 
@@ -57,7 +57,7 @@
     Flags       : SHF_ALLOC + SHF_EXECINSTR (0x00000006)
     Addr        : 0x00000000
     File Offset : 52 (0x34)
-    Size        : 172 bytes (0xac)
+    Size        : 184 bytes (0xb8)
     Link        : SHN_UNDEF
     Info        : 0
     Alignment   : 4
@@ -101,25 +101,29 @@
     $t
     .text
     Reset_Handler
-        0x00000080:    4906        .I      LDR      r1,[pc,#24] ; [0x9c] = 0x50000000
-        0x00000082:    4807        .H      LDR      r0,[pc,#28] ; [0xa0] = 0x55
+        0x00000080:    4907        .I      LDR      r1,[pc,#28] ; [0xa0] = 0x50000004
+        0x00000082:    4808        .H      LDR      r0,[pc,#32] ; [0xa4] = 0xf
         0x00000084:    6008        .`      STR      r0,[r1,#0]
-        0x00000086:    4807        .H      LDR      r0,[pc,#28] ; [0xa4] = 0x2fffff
-        0x00000088:    1e40        @.      SUBS     r0,r0,#1
-        0x0000008a:    d1fd        ..      BNE      0x88 ; Reset_Handler + 8
-        0x0000008c:    4903        .I      LDR      r1,[pc,#12] ; [0x9c] = 0x50000000
-        0x0000008e:    4806        .H      LDR      r0,[pc,#24] ; [0xa8] = 0xaa
-        0x00000090:    6008        .`      STR      r0,[r1,#0]
-        0x00000092:    4804        .H      LDR      r0,[pc,#16] ; [0xa4] = 0x2fffff
-        0x00000094:    1e40        @.      SUBS     r0,r0,#1
-        0x00000096:    d1fd        ..      BNE      0x94 ; Reset_Handler + 20
-        0x00000098:    e7f2        ..      B        Reset_Handler ; 0x80
+        0x00000086:    4908        .I      LDR      r1,[pc,#32] ; [0xa8] = 0x50000000
+        0x00000088:    4808        .H      LDR      r0,[pc,#32] ; [0xac] = 0x55
+        0x0000008a:    6008        .`      STR      r0,[r1,#0]
+        0x0000008c:    4808        .H      LDR      r0,[pc,#32] ; [0xb0] = 0x2fffff
+        0x0000008e:    1e40        @.      SUBS     r0,r0,#1
+        0x00000090:    d1fd        ..      BNE      0x8e ; Reset_Handler + 14
+        0x00000092:    4905        .I      LDR      r1,[pc,#20] ; [0xa8] = 0x50000000
+        0x00000094:    4807        .H      LDR      r0,[pc,#28] ; [0xb4] = 0xaa
+        0x00000096:    6008        .`      STR      r0,[r1,#0]
+        0x00000098:    4805        .H      LDR      r0,[pc,#20] ; [0xb0] = 0x2fffff
+        0x0000009a:    1e40        @.      SUBS     r0,r0,#1
+        0x0000009c:    d1fd        ..      BNE      0x9a ; Reset_Handler + 26
+        0x0000009e:    e7f2        ..      B        0x86 ; Reset_Handler + 6
     $d
-        0x0000009a:    0000        ..      DCW    0
-        0x0000009c:    50000000    ...P    DCD    1342177280
-        0x000000a0:    00000055    U...    DCD    85
-        0x000000a4:    002fffff    ../.    DCD    3145727
-        0x000000a8:    000000aa    ....    DCD    170
+        0x000000a0:    50000004    ...P    DCD    1342177284
+        0x000000a4:    0000000f    ....    DCD    15
+        0x000000a8:    50000000    ...P    DCD    1342177280
+        0x000000ac:    00000055    U...    DCD    85
+        0x000000b0:    002fffff    ../.    DCD    3145727
+        0x000000b4:    000000aa    ....    DCD    170
 
 ====================================
 
@@ -129,7 +133,7 @@
     Type        : SHT_PROGBITS (0x00000001)
     Flags       : None (0x00000000)
     Addr        : 0x00000000
-    File Offset : 224 (0xe0)
+    File Offset : 236 (0xec)
     Size        : 32 bytes (0x20)
     Link        : SHN_UNDEF
     Info        : 0
@@ -145,7 +149,7 @@
     Type        : SHT_PROGBITS (0x00000001)
     Flags       : None (0x00000000)
     Addr        : 0x00000000
-    File Offset : 256 (0x100)
+    File Offset : 268 (0x10c)
     Size        : 68 bytes (0x44)
     Link        : SHN_UNDEF
     Info        : 0
@@ -161,7 +165,7 @@
     Type        : SHT_PROGBITS (0x00000001)
     Flags       : None (0x00000000)
     Addr        : 0x00000000
-    File Offset : 324 (0x144)
+    File Offset : 336 (0x150)
     Size        : 208 bytes (0xd0)
     Link        : SHN_UNDEF
     Info        : 0
@@ -177,8 +181,8 @@
     Type        : SHT_PROGBITS (0x00000001)
     Flags       : None (0x00000000)
     Addr        : 0x00000000
-    File Offset : 532 (0x214)
-    Size        : 76 bytes (0x4c)
+    File Offset : 544 (0x220)
+    Size        : 80 bytes (0x50)
     Link        : SHN_UNDEF
     Info        : 0
     Alignment   : 1
@@ -193,7 +197,7 @@
     Type        : SHT_SYMTAB (0x00000002)
     Flags       : None (0x00000000)
     Addr        : 0x00000000
-    File Offset : 608 (0x260)
+    File Offset : 624 (0x270)
     Size        : 160 bytes (0xa0)
     Link        : Section 7 (.strtab)
     Info        : Last local symbol no = 6
@@ -209,7 +213,7 @@
     Type        : SHT_STRTAB (0x00000003)
     Flags       : None (0x00000000)
     Addr        : 0x00000000
-    File Offset : 768 (0x300)
+    File Offset : 784 (0x310)
     Size        : 192 bytes (0xc0)
     Link        : SHN_UNDEF
     Info        : 0
@@ -225,7 +229,7 @@
     Type        : SHT_NOTE (0x00000007)
     Flags       : None (0x00000000)
     Addr        : 0x00000000
-    File Offset : 960 (0x3c0)
+    File Offset : 976 (0x3d0)
     Size        : 20 bytes (0x14)
     Link        : SHN_UNDEF
     Info        : 0
@@ -245,7 +249,7 @@
     Type        : SHT_PROGBITS (0x00000001)
     Flags       : None (0x00000000)
     Addr        : 0x00000000
-    File Offset : 980 (0x3d4)
+    File Offset : 996 (0x3e4)
     Size        : 660 bytes (0x294)
     Link        : SHN_UNDEF
     Info        : 0
@@ -272,7 +276,7 @@
     Type        : SHT_STRTAB (0x00000003)
     Flags       : None (0x00000000)
     Addr        : 0x00000000
-    File Offset : 1640 (0x668)
+    File Offset : 1656 (0x678)
     Size        : 112 bytes (0x70)
     Link        : SHN_UNDEF
     Info        : 0
