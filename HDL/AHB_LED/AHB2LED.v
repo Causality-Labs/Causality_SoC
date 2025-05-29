@@ -28,6 +28,7 @@ module AHB2LED(
   reg [2:0] rHSIZE;
 
   reg [7:0] rLED;
+  reg [7:0] mask;
  
 //Address Phase Sampling
   always @(posedge HCLK or negedge HRESETn)
@@ -54,9 +55,17 @@ module AHB2LED(
   always @(posedge HCLK or negedge HRESETn)
   begin
     if(!HRESETn)
-      rLED <= 8'b0000_0000;
+    begin 
+          rLED <= 8'b0000_0000;
+          mask <= 8'b0000_0000;
+      end
     else if(rHSEL & rHWRITE & rHTRANS[1])
-      rLED <= HWDATA[7:0];
+    begin
+    case (rHADDR[0])
+         1'b0: rLED <= mask ^ HWDATA[7:0];
+         1'b1: mask <= HWDATA[7:0];
+     endcase
+     end
   end
 
 //Transfer Response
