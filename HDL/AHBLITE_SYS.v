@@ -59,14 +59,17 @@ module AHBLITE_SYS(
 
     wire          hsel_mem;
     wire          hsel_led;
+    wire          hsel_switch;
   
     // Slave read data
     wire   [31:0] hrdata_mem;
     wire   [31:0] hrdata_led;
+    wire   [31:0] hrdata_switches;
 
     // Slave hready
     wire          hready_mem;
     wire          hready_led;
+    wire          hready_switches;
 
     // CM-DS Sideband signals
     wire          lockup;
@@ -220,7 +223,7 @@ module AHBLITE_SYS(
      
       .HSEL_S0(hsel_mem),
       .HSEL_S1(hsel_led),
-      .HSEL_S2(),
+      .HSEL_S2(hsel_switch),
       .HSEL_S3(),
       .HSEL_S4(),
       .HSEL_S5(),
@@ -241,7 +244,7 @@ module AHBLITE_SYS(
      
       .HRDATA_S0(hrdata_mem),
       .HRDATA_S1(hrdata_led),
-      .HRDATA_S2(),
+      .HRDATA_S2(hrdata_switches),
       .HRDATA_S3(),
       .HRDATA_S4(),
       .HRDATA_S5(),
@@ -253,7 +256,7 @@ module AHBLITE_SYS(
      
       .HREADYOUT_S0(hready_mem),
       .HREADYOUT_S1(hready_led),
-      .HREADYOUT_S2(),
+      .HREADYOUT_S2(hready_switches),
       .HREADYOUT_S3(),
       .HREADYOUT_S4(),
       .HREADYOUT_S5(),
@@ -302,6 +305,24 @@ module AHBLITE_SYS(
         .HREADYOUT(hready_led),
         //Sideband Signals
         .LED(LED[7:0])
+    );
+
+    AHB2Switch uAHB2Switch (
+        //AHBLITE Signals
+        .HSEL(hsel_switch),
+        .HCLK(fclk), 
+        .HRESETn(hresetn), 
+        .HREADY(hreadys),     
+        .HADDR(haddrs),
+        .HTRANS(htranss), 
+        .HWRITE(hwrites),
+        .HSIZE(hsizes),
+        .HWDATA(hwdatas), 
+        
+        .HRDATA(hrdata_switches), 
+        .HREADYOUT(hready_switches),
+        //Sideband Signals
+        .Switches(/*Switches*/)
     );
             
  
