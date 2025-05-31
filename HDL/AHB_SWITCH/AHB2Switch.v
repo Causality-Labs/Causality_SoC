@@ -61,9 +61,9 @@ reg [7:0] rSwitches;
     begin 
            rSwitches <= 8'b0000_0000;
     end
-    else if(rHSEL & rHWRITE & rHTRANS[1])
+    else
     begin
-        rSwitches = Switches;
+        rSwitches <= Switches;
      end
   end
 

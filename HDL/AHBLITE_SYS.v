@@ -39,8 +39,8 @@ module AHBLITE_SYS(
     input  wire          RESET,              // Reset
 
     // TO BOARD LEDs
-    output wire    [7:0] LED//,
-
+    output wire    [7:0] LED,
+    input wire     [7:0] sw
         
     // Debug
     //input  wire          TDI,                // JTAG TDI
@@ -322,7 +322,7 @@ module AHBLITE_SYS(
         .HRDATA(hrdata_switches), 
         .HREADYOUT(hready_switches),
         //Sideband Signals
-        .Switches(/*Switches*/)
+        .Switches(sw[7:0])
     );
             
  
