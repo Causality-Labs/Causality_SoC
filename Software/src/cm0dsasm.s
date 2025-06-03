@@ -1,9 +1,8 @@
 ;------------------------------------------------------------------------------------------------------
-; A Simple SoC  Application
-; Toggle LEDs at a given frequency. 
+; Design and Implementation of an AHB VGA Peripheral
+; 1)Display text string: "TEST" on VGA. 
+; 2)Change the color of the four corners of the image region.
 ;------------------------------------------------------------------------------------------------------
-
-
 
 ; Vector Table Mapped to Address 0 at Reset
 
@@ -13,7 +12,7 @@
         				AREA	RESET, DATA, READONLY	  			; First 32 WORDS is VECTOR TABLE
         				EXPORT 	__Vectors
 					
-__Vectors		    	DCD		0x00003FFC							; 1K Internal Memory
+__Vectors		    	DCD		0x00003FFC
         				DCD		Reset_Handler
         				DCD		0  			
         				DCD		0
@@ -55,29 +54,45 @@ Reset_Handler   PROC
                 GLOBAL Reset_Handler
                 ENTRY
 
-AGAIN		   	LDR 	R1, =0x50000000				;Write to LED with value 0x55
-				LDR		R0, =0x55
+;Write "TEST" to the text console
+
+				LDR 	R1, =0x50000000
+				MOVS	R0, #'T'
 				STR		R0, [R1]
 
-
-
-				LDR		R0, =0x2FFFFF				;Delay
-Loop			SUBS	R0,R0,#1
-				BNE Loop
-
-				LDR 	R1, =0x50000000				;Write to LED with value 0xAA
-				LDR		R0, =0xAA
+				LDR 	R1, =0x50000000
+				MOVS	R0, #'E'
 				STR		R0, [R1]
 
-				LDR		R0, =0x2FFFFF				;Delay
-Loop1			SUBS	R0,R0,#1
-				BNE Loop1
+				LDR 	R1, =0x50000000
+				MOVS	R0, #'S'
+				STR		R0, [R1]
+				
+				LDR 	R1, =0x50000000
+				MOVS	R0, #'T'
+				STR		R0, [R1]
 
-				B AGAIN
+;Write four white dots to four corners of the frame buffer
+
+				LDR 	R1, =0x50000004
+				LDR		R0, =0xFF
+				STR		R0, [R1]
+
+				LDR 	R1, =0x50000190
+				LDR		R0, =0xFF
+				STR		R0, [R1]
+		
+				LDR 	R1, =0x5000EE04
+				LDR		R0, =0xFF
+				STR		R0, [R1]
+
+				LDR 	R1, =0x5000EF90
+				LDR		R0, =0xFF
+				STR		R0, [R1]
+
 				ENDP
 
+				ALIGN 		4					 ; Align to a word boundary
 
-				ALIGN 		4						; Align to a word boundary
-
-		END                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+		END                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
    
