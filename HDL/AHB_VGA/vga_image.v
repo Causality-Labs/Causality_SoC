@@ -3,7 +3,7 @@
 //                                                                              //
 //Copyright (c) 2012, ARM All rights reserved.                                  //
 //                                                                              //
-//THIS END USER LICENCE AGREEMENT (“LICENCE”) IS A LEGAL AGREEMENT BETWEEN      //
+//THIS END USER LICENCE AGREEMENT (ï¿½LICENCEï¿½) IS A LEGAL AGREEMENT BETWEEN      //
 //YOU AND ARM LIMITED ("ARM") FOR THE USE OF THE SOFTWARE EXAMPLE ACCOMPANYING  //
 //THIS LICENCE. ARM IS ONLY WILLING TO LICENSE THE SOFTWARE EXAMPLE TO YOU ON   //
 //CONDITION THAT YOU ACCEPT ALL OF THE TERMS IN THIS LICENCE. BY INSTALLING OR  //
@@ -61,6 +61,17 @@ module vga_image(
   always @(posedge clk)
     address_reg <= address-1;
 
+
+  assign addr_w = address_reg[14:0];
+  assign din = image_data;
+  	
+  assign img_x = pixel_x[9:0]-240;
+  assign img_y = pixel_y[9:0];
+  		
+  assign addr_r = {1'b0,img_y[8:2], img_x[8:2]}; 
+  
+  assign image_rgb = dout;
+
 //Frame buffer
  dual_port_ram_sync
   #(.ADDR_WIDTH(15), .DATA_WIDTH(8))
@@ -74,17 +85,6 @@ module vga_image(
     .dout_a(),
     .dout_b(dout)
   ); 
-
-  assign addr_w = address_reg[14:0];
-  assign din = image_data;
-  	
-  assign img_x = pixel_x[9:0]-240;
-  assign img_y = pixel_y[9:0];
-  		
-  assign addr_r = {1'b0,img_y[8:2], img_x[8:2]}; 
-  
-  assign image_rgb = dout;
-
 
 
 endmodule
