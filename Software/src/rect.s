@@ -78,7 +78,16 @@ Reset_Handler   PROC
 				LDR		R0, =0xFF
 				STR		R0, [R1]
 
-				LDR 	R1, =0x50000190
+                LDR 	R1, =0x50000008
+				LDR		R0, =0xFF
+				STR		R0, [R1]
+				
+
+				LDR 	R1, =0x50000060
+				LDR		R0, =0xFF
+				STR		R0, [R1]
+				
+				LDR 	R1, =0x50000064
 				LDR		R0, =0xFF
 				STR		R0, [R1]
 		
@@ -95,4 +104,4 @@ Reset_Handler   PROC
 				ALIGN 		4					 ; Align to a word boundary 
 
 		END                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-   
+    
