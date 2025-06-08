@@ -46,16 +46,16 @@ module VGAInterface(
 
 
 // Time in Vertical Lines
-parameter VertTimeToPulseWidthEnd  = 10'd2;
-parameter VertTimeToBackPorchEnd   = 10'd31;
-parameter VertTimeToDisplayTimeEnd = 10'd511;
-parameter VertTimeToFrontPorchEnd  = 10'd521;
+parameter VertTimeToPulseWidthEnd  = 10'd2; // Synch Pulse = 2
+parameter VertTimeToBackPorchEnd   = 10'd35; // Back Porch = 33
+parameter VertTimeToDisplayTimeEnd = 10'd515; // Display region = 480
+parameter VertTimeToFrontPorchEnd  = 10'd525; // Front Porch = 10
 
 // Time in Horizontal Lines
-parameter HorzTimeToPulseWidthEnd  = 10'd96;
-parameter HorzTimeToBackPorchEnd   = 10'd144;
-parameter HorzTimeToDisplayTimeEnd = 10'd784;
-parameter HorzTimeToFrontPorchEnd  = 10'd800;
+parameter HorzTimeToPulseWidthEnd  = 10'd96; // Synch Pulse = 96
+parameter HorzTimeToBackPorchEnd   = 10'd144; // Back porch = 48
+parameter HorzTimeToDisplayTimeEnd = 10'd784; // Display Region = 640
+parameter HorzTimeToFrontPorchEnd  = 10'd800; // Front Porch = 16
 
 wire TrigHOut, TrigDiv;
 wire [9:0] HorzCount;

@@ -77,19 +77,11 @@ Reset_Handler   PROC
 				LDR 	R1, =0x50000004
 				LDR		R0, =0xFF
 				STR		R0, [R1]
-
-                LDR 	R1, =0x50000008
+			
+				LDR 	R1, =0x50000190
 				LDR		R0, =0xFF
 				STR		R0, [R1]
-				
-
-				LDR 	R1, =0x50000060
-				LDR		R0, =0xFF
-				STR		R0, [R1]
-				
-				LDR 	R1, =0x50000064
-				LDR		R0, =0xFF
-				STR		R0, [R1]
+		
 		
 				LDR 	R1, =0x5000EE04
 				LDR		R0, =0xFF
