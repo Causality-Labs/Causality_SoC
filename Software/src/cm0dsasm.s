@@ -74,7 +74,7 @@ Reset_Handler   PROC
 
 ;Write four white dots to four corners of the frame buffer
 
-				LDR 	R1, =0x50000004
+Again		    LDR 	R1, =0x50000004
 				LDR		R0, =0xFF
 				STR		R0, [R1]
 

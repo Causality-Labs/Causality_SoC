@@ -48,7 +48,7 @@ module vga_image(
 
 
   wire [15:0] addr_r;
-  wire [14:0] addr_w;
+  wire [15:0] addr_w;
   wire [7:0] din;
   wire [7:0] dout;
   
@@ -62,19 +62,19 @@ module vga_image(
     address_reg <= address-1;
 
 
-  assign addr_w = address_reg[14:0];
+  assign addr_w = address_reg[15:0];
   assign din = image_data;
   	
   assign img_x = pixel_x[9:0]-240;
   assign img_y = pixel_y[9:0];
   		
-  assign addr_r = {1'b0,img_y[8:2], img_x[8:2]}; 
+  assign addr_r = {img_y[8:1], img_x[8:1]}; 
   
   assign image_rgb = dout;
 
 //Frame buffer
  dual_port_ram_sync
-  #(.ADDR_WIDTH(15), .DATA_WIDTH(8))
+  #(.ADDR_WIDTH(16), .DATA_WIDTH(8))
   uimage_ram
   ( .clk(clk),
     .reset_n(resetn),

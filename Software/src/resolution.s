@@ -79,6 +79,7 @@ AGAIN			LDR     R1, =0x50000004     ; R1 = first word-address
 				MOVS    R3, #0xFF           ; R3 = value to write
 
 Top				STR     R3, [R1]            ; *R1 = 0xFF
+                SUBS    R3, R3,#1
 				ADDS    R1, R1,#4           ; advance pointer by 4 bytes
 				CMP     R1, R2              ; have we reached (or passed) the end?
 				BLS     Top                ; if R1 = R2, repeat
@@ -88,6 +89,7 @@ Top				STR     R3, [R1]            ; *R1 = 0xFF
 				MOVS    R3, #0xFF           ; R3 = value to write
 
 Bottom			STR     R3, [R1]            ; *R1 = 0xFF
+                SUBS    R3, R3,#1
 				ADDS    R1, R1,#4           ; advance pointer by 4 bytes
 				CMP     R1, R2              ; have we reached (or passed) the end?
 				BLS     Bottom                ; if R1 = R2, repeat
@@ -97,6 +99,7 @@ Bottom			STR     R3, [R1]            ; *R1 = 0xFF
 				MOVS    R3, #0xFF           ; R3 = value to write
 				
 Left			STR   R3, [R1]
+                SUBS  R3, R3,#1
 				ADDS  R1, R1, #127   ; first chunk (max 7 for Rn,Rn,#imm3 or #127 for SP-form)
 				ADDS  R1, R1, #127
 				ADDS  R1, R1, #127
@@ -110,6 +113,7 @@ Left			STR   R3, [R1]
 				MOVS    R3, #0xFF           ; R3 = value to write
 				
 Right			STR   R3, [R1]
+                SUBS  R3, R3,#1
 				ADDS  R1, R1, #127   ; first chunk (max 7 for Rn,Rn,#imm3 or #127 for SP-form)
 				ADDS  R1, R1, #127
 				ADDS  R1, R1, #127
@@ -117,6 +121,7 @@ Right			STR   R3, [R1]
 				ADDS  R1, R1, #4    ; 127�4 + 4 = 512, you�d adjust so total = 512
 				CMP   R1, R2
 				BLS   Right
+				
 				
 				B AGAIN
 				ENDP
