@@ -27,7 +27,7 @@ proc generate_mmi {mmi_file} {
 	set PostBitLane "\">"
 	set fd [open "mmi.tmp" w]
 	puts $fd "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-	puts $fd "<MemInfo Version=\"1\" Minor=\"15\">"
+	puts $fd "<MemInfo Version=\"1\" Minor=\"5\">"
 	puts $fd "\t<Processor Endianness=\"Little\" InstPath=\"my_bram\">"
 	puts $fd "\t\t<AddressSpace Name=\"memory\" Begin=\"0\" End=\"16384\">"
 	puts $fd "\t\t\t<BusBlock>"
