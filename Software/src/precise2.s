@@ -73,7 +73,7 @@ Reset_Handler   PROC
 				STR		R0, [R1]
 
 ;Rectangle in my frame buffer
-
+dat
 AGAIN			LDR     R1, =0x50000004     ; R1 = first word-address
 				LDR     R2, =0x500000C8     ; R2 = last word-address
 				MOVS    R3, #0xFF           ; R3 = value to write
@@ -84,6 +84,15 @@ Top				STR     R3, [R1]            ; *R1 = 0xFF
 				CMP     R1, R2              ; have we reached (or passed) the end?
 				BLS     Top                ; if R1 = R2, repeat
 				
+				
+                LDR     R1, =0x50000104     ; R1 = first word-address
+				LDR     R2, =0x500001C8     ; R2 = last word-address
+
+Top2			STR     R3, [R1]            ; *R1 = 0xFF
+				SUBS    R3, R3,#1
+				ADDS    R1, R1,#4           ; advance pointer by 4 bytes
+				CMP     R1, R2              ; have we reached (or passed) the end?
+				BLS     Top2                ; if R1 = R2, repeat
 				
 				B AGAIN
 				ENDP
