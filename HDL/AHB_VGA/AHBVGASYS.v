@@ -119,7 +119,7 @@ module AHBVGA(
   vga_image uvga_image(
     .clk(HCLK),
     .resetn(HRESETn),
-    .address(last_HADDR[19:2]),
+    .address(last_HADDR[17:2]),
     .pixel_x(pixel_x),
     .pixel_y(pixel_y),
     .image_we(image_write),

@@ -75,7 +75,7 @@ Reset_Handler   PROC
 ;Rectangle in my frame buffer
 
 AGAIN			LDR     R1, =0x50000004     ; R1 = first word-address
-				LDR     R2, =0x500EF804     ; R2 = last word-address
+				LDR     R2, =0x500000C8     ; R2 = last word-address
 				MOVS    R3, #0xFF           ; R3 = value to write
 
 Top				STR     R3, [R1]            ; *R1 = 0xFF

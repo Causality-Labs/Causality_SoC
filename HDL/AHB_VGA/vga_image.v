@@ -42,20 +42,20 @@ module vga_image(
   input wire [9:0] pixel_y,
   input wire image_we,
   input wire [7:0] image_data,
-  input wire [17:0] address,
+  input wire [15:0] address,
   output wire [7:0] image_rgb
   );
 
 
-  wire [17:0] addr_r;
-  wire [17:0] addr_w;
+  wire [15:0] addr_r;
+  wire [15:0] addr_w;
   wire [7:0] din;
   wire [7:0] dout;
   
   wire [9:0] img_x;
   wire [9:0] img_y;
 
-  reg [17:0] address_reg;
+  reg [15:0] address_reg;
   
  //buffer address = bus address -1 , as the first address is used for console
   always @(posedge clk)
@@ -68,13 +68,13 @@ module vga_image(
   assign img_x = pixel_x[9:0]-240;
   assign img_y = pixel_y[9:0];
   		
-  assign addr_r = {img_y[8:0], img_x[8:0]}; 
+  assign addr_r = {img_y[8:3], img_x[8:3]}; 
   
   assign image_rgb = dout;
 
 //Frame buffer
  dual_port_ram_sync
-  #(.ADDR_WIDTH(18), .DATA_WIDTH(8))
+  #(.ADDR_WIDTH(16), .DATA_WIDTH(8))
   uimage_ram
   ( .clk(clk),
     .reset_n(resetn),
