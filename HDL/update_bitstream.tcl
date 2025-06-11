@@ -15,6 +15,13 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+# at the top of update_bitstream.tcl (before any 'proc' or 'source' calls):
+foreach name {generate_mmi generate_mem} {
+  if {[info commands $name] ne ""} {
+    rename $name {}
+  }
+}
+
 #Source the header file if not defined. Defines procedures generate_mmi and generate_mem.
 if {[info procs generate_mem] eq ""} {
 	source update_bitstream_header.tcl
