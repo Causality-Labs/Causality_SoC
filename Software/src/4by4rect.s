@@ -73,7 +73,7 @@ Reset_Handler   PROC
 				STR		R0, [R1]
 
 ;Rectangle in my frame buffer
-RES_SET         LDR     R1, =0x50F00000
+RES_SET         LDR     R1, =0x5003BC08
 	            LDR     R0, =0x02
 				STR     R0, [R1]
 

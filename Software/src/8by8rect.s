@@ -73,7 +73,7 @@ Reset_Handler   PROC
 				STR		R0, [R1]
 
 ;Rectangle in my frame buffer
-RES_SET         LDR     R1, =0x50F00000
+RES_SET         LDR     R1, =0x5003BC08
 	            LDR     R0, =0x03
 				STR     R0, [R1]
 				MOVS    R3, #0xFF           ; R3 = value to write

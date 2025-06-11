@@ -151,6 +151,7 @@ module AHBVGA(
       end
   end
   
+  // 0x5003BC04 + 4 = 0x5003BC08 - Resolution Register.
   //Set image write and image write data
   always @(posedge HCLK, negedge HRESETn)
   begin
@@ -162,7 +163,7 @@ module AHBVGA(
       end
     else if(last_HWRITE & last_HSEL & last_HTRANS[1] & HREADYOUT & sel_image)
       begin
-        if (last_HADDR[23:0] == 32'hF00000)
+        if (last_HADDR[19:0] == 32'h3BC08)
             RES_REG <= {6'b0, HWDATA[1:0]};
         else begin
           image_write <= 1'b1;
@@ -176,17 +177,6 @@ module AHBVGA(
       end
   end
 
-  //   always @(posedge clk or negedge resetn) begin
-  //   if (!resetn) begin
-  //     RES_REG     <= 8'h02;     // default on reset
-  //   end else begin
-  //     if (address == 32'hF00000)
-  //       RES_REG <= {6'b0, image_data[1:0]};  // only low-2 bits used
-  //     else
-  //       address_reg <= address - 1;
-  //   end
-  // end
-  
   //Select the rgb color for a particular region
   always @*
   begin
