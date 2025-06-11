@@ -70,7 +70,7 @@ module AHBVGA(
   reg [7:0] console_wdata;//data to write to console
   reg image_write;        //write to image
   reg [7:0] image_wdata;  //data to write to image
-  
+  reg [7:0] RES_REG;
   wire [7:0] image_rgb;   //image color
   
   wire scroll;            //scrolling signal
@@ -124,6 +124,7 @@ module AHBVGA(
     .pixel_y(pixel_y),
     .image_we(image_write),
     .image_data(image_wdata),
+    .resolution(RES_REG),
     .image_rgb(image_rgb)
     );
 
@@ -157,11 +158,16 @@ module AHBVGA(
       begin
         image_write <= 0;
         image_wdata <= 0;
+        RES_REG     <= 0;
       end
     else if(last_HWRITE & last_HSEL & last_HTRANS[1] & HREADYOUT & sel_image)
       begin
-        image_write <= 1'b1;
-        image_wdata <= HWDATA[7:0];
+        if (last_HADDR[23:0] == 32'hF00000)
+            RES_REG <= {6'b0, HWDATA[1:0]};
+        else begin
+          image_write <= 1'b1;
+          image_wdata <= HWDATA[7:0];
+        end
       end
     else
       begin
@@ -169,6 +175,17 @@ module AHBVGA(
         image_wdata <= 0;
       end
   end
+
+  //   always @(posedge clk or negedge resetn) begin
+  //   if (!resetn) begin
+  //     RES_REG     <= 8'h02;     // default on reset
+  //   end else begin
+  //     if (address == 32'hF00000)
+  //       RES_REG <= {6'b0, image_data[1:0]};  // only low-2 bits used
+  //     else
+  //       address_reg <= address - 1;
+  //   end
+  // end
   
   //Select the rgb color for a particular region
   always @*

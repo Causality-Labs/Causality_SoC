@@ -76,13 +76,13 @@ Reset_Handler   PROC
 RES_SET         LDR     R1, =0x50F00000
 	            LDR     R0, =0x03
 				STR     R0, [R1]
+				MOVS    R3, #0xFF           ; R3 = value to write
 
 AGAIN			LDR     R1, =0x50000004     ; R1 = first word-address
 				LDR     R2, =0x500000C8     ; R2 = last word-address
-				MOVS    R3, #0xFF           ; R3 = value to write
+				SUBS    R3, R3,#1
 
 Top				STR     R3, [R1]            ; *R1 = 0xFF
-				SUBS    R3, R3,#1
 				ADDS    R1, R1,#4           ; advance pointer by 4 bytes
 				CMP     R1, R2              ; have we reached (or passed) the end?
 				BLS     Top                ; if R1 = R2, repeat
@@ -91,7 +91,6 @@ Top				STR     R3, [R1]            ; *R1 = 0xFF
 				LDR     R2, =0x50003BC8     ; R2 = last word-address
 
 Right           STR     R3, [R1]            ; *R1 = 0xFF
-                SUBS    R3, R3, #1          ; Decrement R3
                 LDR     R4, =0x100          ; Load constant 0x100 into R4
                 ADDS    R1, R1, R4          ; Advance pointer by 0x100
                 CMP     R1, R2            ; Compare R1 with R2
@@ -101,7 +100,6 @@ Right           STR     R3, [R1]            ; *R1 = 0xFF
 				LDR     R2, =0x50003BC8      ; R2 = last word-address				
 
 Bottom			STR     R3, [R1]            ; *R1 = 0xFF
-				SUBS    R3, R3,#1
 				ADDS    R1, R1,#4           ; advance pointer by 4 bytes
 				CMP     R1, R2              ; have we reached (or passed) the end?
 				BLS     Bottom                ; if R1 = R2, repeat
@@ -110,14 +108,16 @@ Bottom			STR     R3, [R1]            ; *R1 = 0xFF
 				LDR     R2, =0x50003B04     ; R2 = last word-address
 
 Left            STR     R3, [R1]            ; *R1 = 0xFF
-                SUBS    R3, R3, #1          ; Decrement R3
                 LDR     R4, =0x100          ; Load constant 0x100 into R4
                 ADDS    R1, R1, R4          ; Advance pointer by 0x100
                 CMP     R1, R2            ; Compare R1 with R2
                 BLS     Left            ; If R1 <= R2, repeat
 				
-				
-				B RES_SET
+				LDR		R0, =0x2FFFF8				;Delay
+Loop			SUBS	R0,R0,#1
+				BNE Loop
+
+				B AGAIN
 				ENDP
 
 				ALIGN 		4					 ; Align to a word boundary 

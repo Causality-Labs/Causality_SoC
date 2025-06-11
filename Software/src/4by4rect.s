@@ -73,50 +73,51 @@ Reset_Handler   PROC
 				STR		R0, [R1]
 
 ;Rectangle in my frame buffer
+RES_SET         LDR     R1, =0x50F00000
+	            LDR     R0, =0x02
+				STR     R0, [R1]
 
 AGAIN			LDR     R1, =0x50000004     ; R1 = first word-address
 				LDR     R2, =0x50000190     ; R2 = last word-address
 				MOVS    R3, #0xFF           ; R3 = value to write
 
 Top				STR     R3, [R1]            ; *R1 = 0xFF
+				SUBS    R3, R3, #1
 				ADDS    R1, R1,#4           ; advance pointer by 4 bytes
 				CMP     R1, R2              ; have we reached (or passed) the end?
 				BLS     Top                ; if R1 = R2, repeat
+
+
+				LDR     R1, =0x50000190     ; R1 = first word-address
+				LDR     R2, =0x5000EF90     ; R2 = last word-address
 				
+Right			STR   R3, [R1]            ; must add 512 to move down 1
+				SUBS  R3, R3, #1
+				LDR   R4, =0x200          ; Load constant 0x100 into R4
+                ADDS  R1, R1, R4          ; Advance pointer by 0x100
+				CMP   R1, R2
+				BLS   Right	
+			
 				LDR     R1, =0x5000EE04    ; R1 = first word-address
 				LDR     R2, =0x5000EF90     ; R2 = last word-address
-				MOVS    R3, #0xFF           ; R3 = value to write
+
 
 Bottom			STR     R3, [R1]            ; *R1 = 0xFF
+				SUBS  R3, R3, #1
 				ADDS    R1, R1,#4           ; advance pointer by 4 bytes
 				CMP     R1, R2              ; have we reached (or passed) the end?
 				BLS     Bottom                ; if R1 = R2, repeat
 				
 				LDR     R1, =0x50000004     ; R1 = first word-address
 				LDR     R2, =0x5000EE04     ; R2 = last word-address
-				MOVS    R3, #0xFF           ; R3 = value to write
 				
-Left			STR   R3, [R1]
-				ADDS  R1, R1, #127   ; first chunk (max 7 for Rn,Rn,#imm3 or #127 for SP-form)
-				ADDS  R1, R1, #127
-				ADDS  R1, R1, #127
-				ADDS  R1, R1, #127
-				ADDS  R1, R1, #4    ; 127�4 + 4 = 512, you�d adjust so total = 512
+Left			STR   R3, [R1]            ; must add 512 to move down 1
+				SUBS  R3, R3, #1
+				LDR   R4, =0x200          ; Load constant 0x100 into R4
+                ADDS  R1, R1, R4          ; Advance pointer by 0x100
 				CMP   R1, R2
 				BLS   Left
 		
-				LDR     R1, =0x50000190     ; R1 = first word-address
-				LDR     R2, =0x5000EF90     ; R2 = last word-address
-				MOVS    R3, #0xFF           ; R3 = value to write
-				
-Right			STR   R3, [R1]
-				ADDS  R1, R1, #127   ; first chunk (max 7 for Rn,Rn,#imm3 or #127 for SP-form)
-				ADDS  R1, R1, #127
-				ADDS  R1, R1, #127
-				ADDS  R1, R1, #127
-				ADDS  R1, R1, #4    ; 127�4 + 4 = 512, you�d adjust so total = 512
-				CMP   R1, R2
-				BLS   Right
 				
 				B AGAIN
 				ENDP

@@ -42,6 +42,7 @@ module vga_image(
   input wire [9:0] pixel_y,
   input wire image_we,
   input wire [7:0] image_data,
+  input wire [7:0] resolution,
   input wire [15:0] address,
   output wire [7:0] image_rgb
   );
@@ -56,23 +57,14 @@ module vga_image(
   wire [9:0] img_y;
 
   reg [15:0] address_reg;
-  reg [7:0] RES_REG;
 
   
   
   
  //buffer address = bus address -1 , as the first address is used for console
   // add resetn to the sensitivity list
-  always @(posedge clk or negedge resetn) begin
-    if (!resetn) begin
-      RES_REG     <= 8'h03;     // default on reset
-    end else begin
-      if (address == 32'hF00000)
-        RES_REG <= {6'b0, image_data[1:0]};  // only low-2 bits used
-      else
-        address_reg <= address - 1;
-    end
-  end
+  always @(posedge clk)
+    address_reg <= address-1;
 
 
   assign addr_w = address_reg[15:0];
@@ -81,10 +73,10 @@ module vga_image(
   assign img_x = pixel_x[9:0]-240;
   assign img_y = pixel_y[9:0];
   
-assign addr_r = (RES_REG == 8'h01) ? {img_y[8:1], img_x[8:1]} :
-                (RES_REG == 8'h02) ? {img_y[8:2], img_x[8:2]} :
-                (RES_REG == 8'h03) ? {img_y[8:3], img_x[8:3]} :
-                                    {img_y[8:3], img_x[8:3]};
+  assign addr_r = (resolution == 8'h01) ? {img_y[8:1], img_x[8:1]} :
+                  (resolution == 8'h02) ? {img_y[8:2], img_x[8:2]} :
+                  (resolution == 8'h03) ? {img_y[8:3], img_x[8:3]} :
+                                       {img_y[8:2], img_x[8:2]} ;
   		
   
 assign image_rgb = dout;
