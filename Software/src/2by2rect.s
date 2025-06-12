@@ -73,17 +73,16 @@ Reset_Handler   PROC
 				STR		R0, [R1]
 
 ;Rectangle in my frame buffer
-RES_SET         LDR     R1, =0x5003BC08
+RES_SET         LDR     R1, =0x5003BF24
 	            LDR     R0, =0x01
 				STR     R0, [R1]
 				MOVS    R3, #0xFF           ; R3 = value to write
 
 AGAIN			LDR     R1, =0x50000004     ; R1 = first word-address
 				LDR     R2, =0x50000320     ; R2 = last word-address
-
+				SUBS    R3, R3,#1
 
 Top				STR     R3, [R1]            ; *R1 = 0xFF
-                SUBS    R3, R3, #1
 				ADDS    R1, R1,#4           ; advance pointer by 4 bytes
 				CMP     R1, R2              ; have we reached (or passed) the end?
 				BLS     Top                ; if R1 = R2, repeat
@@ -92,7 +91,6 @@ Top				STR     R3, [R1]            ; *R1 = 0xFF
 				LDR     R2, =0x5003BF20     ; R2 = last word-address
 				
 Right			STR   R3, [R1]            ; must add 512 to move down 1
-				SUBS  R3, R3, #1
 				LDR   R4, =0x400          ; Load constant 0x100 into R4
                 ADDS  R1, R1, R4          ; Advance pointer by 0x100
 				CMP   R1, R2
@@ -102,7 +100,6 @@ Right			STR   R3, [R1]            ; must add 512 to move down 1
 				LDR     R2, =0x5003BF20   ; R2 = last word-address
 
 Bottom			STR     R3, [R1]            ; *R1 = 0xFF
-                SUBS    R3, R3,#1
 				ADDS    R1, R1,#4           ; advance pointer by 4 bytes
 				CMP     R1, R2              ; have we reached (or passed) the end?
 				BLS     Bottom                ; if R1 = R2, repeat
@@ -111,13 +108,12 @@ Bottom			STR     R3, [R1]            ; *R1 = 0xFF
 				LDR     R2, =0x5003BC04     ; R2 = last word-address
 				
 Left			STR   R3, [R1]            ; must add 512 to move down 1
-				SUBS  R3, R3, #1
 				LDR   R4, =0x400          ; Load constant 0x100 into R4
                 ADDS  R1, R1, R4          ; Advance pointer by 0x100
 				CMP   R1, R2
 				BLS   Left
 
-				LDR		R0, =0x2FFFFF				;Delay
+				LDR		R0, =0x2FFFF8				;Delay
 Loop			SUBS	R0,R0,#1
 				BNE Loop
 				
