@@ -3,7 +3,7 @@
 //                                                                              //
 //Copyright (c) 2012, ARM All rights reserved.                                  //
 //                                                                              //
-//THIS END USER LICENCE AGREEMENT (“LICENCE”) IS A LEGAL AGREEMENT BETWEEN      //
+//THIS END USER LICENCE AGREEMENT (ï¿½LICENCEï¿½) IS A LEGAL AGREEMENT BETWEEN      //
 //YOU AND ARM LIMITED ("ARM") FOR THE USE OF THE SOFTWARE EXAMPLE ACCOMPANYING  //
 //THIS LICENCE. ARM IS ONLY WILLING TO LICENSE THE SOFTWARE EXAMPLE TO YOU ON   //
 //CONDITION THAT YOU ACCEPT ALL OF THE TERMS IN THIS LICENCE. BY INSTALLING OR  //
@@ -110,11 +110,13 @@ module AHBUART(
   assign HREADYOUT = ~tx_full;
    
   //UART  write select
+  /* If last_HWRITE is high write to the  Transmit FIFO. */
   assign uart_wr = last_HTRANS[1] & last_HWRITE & last_HSEL& (last_HADDR[7:0]==8'h00);
   //Only write last 8 bits of Data
   assign uart_wdata = HWDATA[7:0];
 
   //UART read select
+  /* If last_HWRITE is low read from recieve FIFO. */
   assign uart_rd = last_HTRANS[1] & ~last_HWRITE & last_HSEL & (last_HADDR[7:0]==8'h00);
   
 
@@ -124,6 +126,7 @@ module AHBUART(
   assign uart_irq = ~rx_empty; 
   
   //generate a fixed baud rate 19200bps
+  // TODO: Make baudrate reconfigurable.
   BAUDGEN uBAUDGEN(
     .clk(HCLK),
     .resetn(HRESETn),
