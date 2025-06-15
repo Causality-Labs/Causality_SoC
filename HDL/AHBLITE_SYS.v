@@ -72,7 +72,7 @@ module AHBLITE_SYS(
     // Clock
     wire          fclk;                      // Free running clock
     // Reset
-    wire          reset_n = RESET;
+    wire          reset_n = !RESET;
 	
     // Select signals
     wire    [3:0] mux_sel;

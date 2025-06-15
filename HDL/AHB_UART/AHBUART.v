@@ -91,6 +91,10 @@ module AHBUART(
   reg [31:0] last_HADDR;
   reg last_HWRITE;
   reg last_HSEL;
+
+  //AHB UART Regs
+  reg [15:0] BAUD_DIVISOR;
+  reg w_baudgen;
   
   
 //Set Registers for AHB Address State
@@ -111,13 +115,34 @@ module AHBUART(
    
   //UART  write select
   /* If last_HWRITE is high write to the  Transmit FIFO. */
-  assign uart_wr = last_HTRANS[1] & last_HWRITE & last_HSEL& (last_HADDR[7:0]==8'h00);
+  assign uart_wr = last_HTRANS[1] & last_HWRITE & last_HSEL & (last_HADDR[7:0]==8'h00);
+  /* If last_HWRITE is low read from recieve FIFO. */
+  assign uart_rd = last_HTRANS[1] & ~last_HWRITE & last_HSEL & (last_HADDR[7:0]==8'h00);
+
+  /* Write to BAUD_DIVISOR register if 0x5100_0008 */
+  always @(posedge HCLK, negedge HRESETn)
+  begin
+    if(!HRESETn)
+      begin
+        BAUD_DIVISOR <= 16'd162; // default divisor is 162 meaning the default baudrate is 
+        w_baudgen <= 1'b0;
+      end
+    else if(last_HTRANS[1] & last_HWRITE & last_HSEL &  last_HADDR[7:0]==8'h08)
+      begin
+        BAUD_DIVISOR <= HWDATA[15:0];
+        w_baudgen <= 1'b1;
+      end
+    else
+      begin
+        w_baudgen <= 1'b0;
+      end
+  end
+  
   //Only write last 8 bits of Data
   assign uart_wdata = HWDATA[7:0];
 
   //UART read select
-  /* If last_HWRITE is low read from recieve FIFO. */
-  assign uart_rd = last_HTRANS[1] & ~last_HWRITE & last_HSEL & (last_HADDR[7:0]==8'h00);
+  
   
 
   assign HRDATA = (last_HADDR[7:0]==8'h00) ? {24'h0000_00,uart_rdata}:{24'h0000_00,status};
@@ -130,6 +155,8 @@ module AHBUART(
   BAUDGEN uBAUDGEN(
     .clk(HCLK),
     .resetn(HRESETn),
+    .write_enable(w_baudgen),
+    .divisor(BAUD_DIVISOR),
     .baudtick(b_tick)
   );
   

@@ -54,6 +54,16 @@ __Vectors		    	DCD		0x00003FFC
 Reset_Handler   PROC
                 GLOBAL Reset_Handler
                 ENTRY
+;Configure the baudrate of the UART peripheral
+; 326 -> 9600
+; 162 -> 19200
+;  81 -> 38400
+;  54 -> 57600
+;  27 -> 115200
+
+				LDR 	R2, =0x51000008
+				LDR     R0, =27
+				STR		R0, [R2]
 
 ;Write "TEST" to the text console and the UART
 
