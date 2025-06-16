@@ -95,6 +95,7 @@ module AHBUART(
   //AHB UART Regs
   reg [15:0] BAUD_DIVISOR;
   reg w_baudgen;
+  reg [7:0] PARITY_REGISTER;
   
   
 //Set Registers for AHB Address State
@@ -131,6 +132,10 @@ module AHBUART(
       begin
         BAUD_DIVISOR <= HWDATA[15:0];
         w_baudgen <= 1'b1;
+      end
+    else if(last_HTRANS[1] & last_HWRITE & last_HSEL &  last_HADDR[7:0]==8'h0C)
+      begin
+        PARITY_REGISTER <= HWDATA[15:0];
       end
     else
       begin
@@ -206,6 +211,8 @@ module AHBUART(
     .tx_start(!tx_empty),
     .b_tick(b_tick),
     .d_in(tx_data[7:0]),
+    .parity_en(PARITY_REGISTER[1]),
+    .parity_odd(PARITY_REGISTER[0]),
     .tx_done(tx_done),
     .tx(RsTx)
   );

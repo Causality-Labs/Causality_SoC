@@ -64,6 +64,15 @@ Reset_Handler   PROC
 				LDR 	R2, =0x51000008
 				LDR     R0, =27
 				STR		R0, [R2]
+				
+;Parity Bit configuration
+; 0X -> no parity.
+; 10 -> even parity, 0x2
+; 11 -> odd parity,  0x3
+
+				LDR 	R2, =0x5100000C
+				LDR     R0, =0x03
+				STR		R0, [R2]
 
 ;Write "TEST" to the text console and the UART
 
