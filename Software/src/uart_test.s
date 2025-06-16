@@ -125,10 +125,16 @@ Reset_Handler   PROC
 
 WAIT			LDR 	R1, =0x51000004
 				LDR		R0, [R1]
-				MOVS	R1, #01
+			    MOVS	R3, R0 ; Store a copy of the status value to check parity later
+				MOVS	R1, #02 ; rx_done bit
 				ANDS	R0,  R0,  R1
 				CMP		R0,	#0x00
-				BNE		WAIT		
+				BNE		WAIT
+
+PARITY_CHECK	MOVS	R1, #01 ; Parity bit
+				ANDS	R3,  R3,  R1 ; Check parity
+				CMP		R3,	#0x00
+				BNE		WAIT
 
 ;print received text to both UART and VGA
 

@@ -97,6 +97,7 @@ module AHBUART(
   reg w_baudgen;
   reg [7:0] PARITY_REGISTER;
   
+  wire uart_parity_err;
   
 //Set Registers for AHB Address State
   always@ (posedge HCLK)
@@ -151,7 +152,7 @@ module AHBUART(
   
 
   assign HRDATA = (last_HADDR[7:0]==8'h00) ? {24'h0000_00,uart_rdata}:{24'h0000_00,status};
-  assign status = {6'b000000,tx_full,rx_empty};
+  assign status = {5'b00000, tx_full, rx_empty, uart_parity_err}; // rx_empty is bit 1 and parrity err is bit 0
   
   assign uart_irq = ~rx_empty; 
   
@@ -200,6 +201,9 @@ module AHBUART(
     .resetn(HRESETn),
     .b_tick(b_tick),
     .rx(RsRx),
+    .parity_err(uart_parity_err),
+    .parity_en(PARITY_REGISTER[1]),
+    .parity_odd(PARITY_REGISTER[0]),
     .rx_done(rx_done),
     .dout(rx_data[7:0])
   );

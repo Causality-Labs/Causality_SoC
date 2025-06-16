@@ -3,7 +3,7 @@
 //                                                                              //
 //Copyright (c) 2012, ARM All rights reserved.                                  //
 //                                                                              //
-//THIS END USER LICENCE AGREEMENT (“LICENCE”) IS A LEGAL AGREEMENT BETWEEN      //
+//THIS END USER LICENCE AGREEMENT (ï¿½LICENCEï¿½) IS A LEGAL AGREEMENT BETWEEN      //
 //YOU AND ARM LIMITED ("ARM") FOR THE USE OF THE SOFTWARE EXAMPLE ACCOMPANYING  //
 //THIS LICENCE. ARM IS ONLY WILLING TO LICENSE THE SOFTWARE EXAMPLE TO YOU ON   //
 //CONDITION THAT YOU ACCEPT ALL OF THE TERMS IN THIS LICENCE. BY INSTALLING OR  //
@@ -40,26 +40,30 @@ module UART_RX(
   input wire resetn,
   input wire b_tick,        //Baud generator tick
   input wire rx,            //RS-232 data port
-  
+  input wire parity_en,
+  input wire parity_odd,
+  output reg parity_err,
   output reg rx_done,       //transfer completed
   output wire [7:0] dout    //output data
   );
 
 //STATE DEFINES  
-  localparam [1:0] idle_st = 2'b00;
-  localparam [1:0] start_st = 2'b01;
-  localparam [1:0] data_st = 2'b11;
-  localparam [1:0] stop_st = 2'b10;
+  localparam [2:0] idle_st   = 3'b000;
+  localparam [2:0] start_st  = 3'b001;
+  localparam [2:0] data_st   = 3'b010;
+  localparam [2:0] parity_st = 3'b011;
+  localparam [2:0] stop_st   = 3'b100;
 
 //Internal Signals  
-  reg [1:0] current_state;
-  reg [1:0] next_state;
+  reg [2:0] current_state;
+  reg [2:0] next_state;
   reg [3:0] b_reg; //baud-rate/over sampling counter
   reg [3:0] b_next;
   reg [2:0] count_reg; //data-bit counter
   reg [2:0] count_next;
   reg [7:0] data_reg; //data register
   reg [7:0] data_next;
+
   
 //State Machine  
   always @ (posedge clk, negedge resetn)
@@ -70,6 +74,7 @@ module UART_RX(
         b_reg <= 0;
         count_reg <= 0;
         data_reg <=0;
+        parity_err <= 1'b0;
       end
     else
       begin
@@ -88,6 +93,7 @@ module UART_RX(
     count_next = count_reg;
     data_next = data_reg;
     rx_done = 1'b0;
+    parity_err = 1'b0;
         
     case(current_state)
       idle_st:
@@ -114,13 +120,35 @@ module UART_RX(
             begin
               b_next = 0;
               data_next = {rx, data_reg [7:1]};
-              if(count_next ==7) // 8 Data bits
-                next_state = stop_st;
+              if(count_next == 7) // 8 Data bits
+                next_state = parity_en ? parity_st : stop_st;
               else
                 count_next = count_reg + 1'b1;
             end
           else
             b_next = b_reg + 1;
+
+      parity_st: begin
+        // In parity_st, sample the parity bit from rx after one bit period.
+        if (b_tick) begin
+          if (b_reg == 15) begin
+            b_next = 0;
+            // Compute expected parity from received data:
+            // (^data_reg) computes even parity over data_reg bits.
+            // If odd parity is required, invert the computed parity.
+            if (parity_odd) begin
+              if (rx != ~(^data_reg))
+                parity_err = 1'b1;
+            end else begin
+              if (rx != (^data_reg))
+                parity_err = 1'b1;
+            end
+            next_state = stop_st;
+          end else begin
+            b_next = b_reg + 1;
+          end
+        end
+      end
             
       stop_st:
         if(b_tick)
