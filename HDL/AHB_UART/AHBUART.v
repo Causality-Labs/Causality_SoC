@@ -201,9 +201,9 @@ module AHBUART(
     .resetn(HRESETn),
     .b_tick(b_tick),
     .rx(RsRx),
-    .parity_err(uart_parity_err),
     .parity_en(PARITY_REGISTER[1]),
     .parity_odd(PARITY_REGISTER[0]),
+    .parity_err(uart_parity_err),
     .rx_done(rx_done),
     .dout(rx_data[7:0])
   );

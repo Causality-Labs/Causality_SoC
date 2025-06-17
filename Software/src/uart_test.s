@@ -66,12 +66,12 @@ Reset_Handler   PROC
 				STR		R0, [R2]
 				
 ;Parity Bit configuration
-; 0X -> no parity.
+; 0X -> no parity. 0x00 and 0x01
 ; 10 -> even parity, 0x2
 ; 11 -> odd parity,  0x3
 
 				LDR 	R2, =0x5100000C
-				LDR     R0, =0x03
+				LDR     R0, =0x01
 				STR		R0, [R2]
 
 ;Write "TEST" to the text console and the UART
@@ -119,23 +119,27 @@ Reset_Handler   PROC
 				LDR		R0, =0xFF
 				STR		R0, [R1]
 
+				B       WAIT
+;clear FIFO
+CLEAR_FIFO      LDR 	R1, =0x51000000
+                LDR 	R0, [R1]
+				B       WAIT
 
 
 ;wait until receive buffer is not empty
 
 WAIT			LDR 	R1, =0x51000004
 				LDR		R0, [R1]
+				MOVS    R3, R0
 				MOVS	R1, #02 ; rx_done bit
 				ANDS	R0,  R0,  R1
 				CMP		R0,	#0x00
 				BNE		WAIT
 
-PARITY_CHECK	LDR 	R1, =0x51000004
-				LDR		R0, [R1]
-				MOVS	R1, #01 ; parity bit
-				ANDS	R0,  R0,  R1
-				CMP		R0,	#0x00
-				BNE		WAIT
+PARITY_CHECK	MOVS	R1, #01 ; parity flag
+				ANDS	R3,  R3 ,  R1
+				CMP		R3,	#0x00
+				BNE		CLEAR_FIFO
 
 ;print received text to both UART and VGA
 

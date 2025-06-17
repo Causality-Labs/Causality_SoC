@@ -63,7 +63,7 @@ module UART_RX(
   reg [2:0] count_next;
   reg [7:0] data_reg; //data register
   reg [7:0] data_next;
-
+  reg parity_err_next;
   
 //State Machine  
   always @ (posedge clk, negedge resetn)
@@ -82,6 +82,7 @@ module UART_RX(
         b_reg <= b_next;
         count_reg <= count_next;
         data_reg <= data_next;
+        parity_err <= parity_err_next;
       end
   end
 
@@ -93,7 +94,7 @@ module UART_RX(
     count_next = count_reg;
     data_next = data_reg;
     rx_done = 1'b0;
-    parity_err = 1'b0;
+    parity_err_next = parity_err;
         
     case(current_state)
       idle_st:
@@ -128,27 +129,29 @@ module UART_RX(
           else
             b_next = b_reg + 1;
 
-      parity_st: begin
-        // In parity_st, sample the parity bit from rx after one bit period.
-        if (b_tick) begin
-          if (b_reg == 15) begin
-            b_next = 0;
-            // Compute expected parity from received data:
-            // (^data_reg) computes even parity over data_reg bits.
-            // If odd parity is required, invert the computed parity.
-            if (parity_odd) begin
-              if (rx != ~(^data_reg))
-                parity_err = 1'b1;
-            end else begin
-              if (rx != (^data_reg))
-                parity_err = 1'b1;
-            end
-            next_state = stop_st;
-          end else begin
+      parity_st:
+        if (b_tick)
+          if (b_reg == 15)
+            begin
+              b_next = 0;
+              if (parity_odd)
+              begin
+                if (rx == ^data_reg) // if data[7:0] is even then rx should 1
+                  parity_err_next = 1'b1;
+                else
+                  parity_err_next = 1'b0;
+              end 
+              else
+              begin
+                if (rx == ^data_reg)
+                  parity_err_next = 1'b0;
+                else
+                  parity_err_next = 1'b1;
+              end
+              next_state = stop_st;
+            end 
+          else 
             b_next = b_reg + 1;
-          end
-        end
-      end
             
       stop_st:
         if(b_tick)
