@@ -151,7 +151,7 @@ module AHBVGA(
       end
   end
   
-  // 0x5003BC04 + 4 = 0x5003BC08 - Resolution Register.
+  // 0x5003BF20 + 4 = 0x5003BF24- Resolution Register.
   //Set image write and image write data
   always @(posedge HCLK, negedge HRESETn)
   begin

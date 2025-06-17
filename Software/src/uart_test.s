@@ -1,8 +1,9 @@
 ;------------------------------------------------------------------------------------------------------
-; Design and Implementation of an AHB VGA Peripheral
+; Design and Implementation of an AHB UART peripheral
 ; 1)Display text string: "TEST" on VGA. 
-; 2)Change the color of the four corners of the image region.
+; 2)Receive/ print characters from/ to a computer through UART port.
 ;------------------------------------------------------------------------------------------------------
+
 
 ; Vector Table Mapped to Address 0 at Reset
 
@@ -53,28 +54,56 @@ __Vectors		    	DCD		0x00003FFC
 Reset_Handler   PROC
                 GLOBAL Reset_Handler
                 ENTRY
+;Configure the baudrate of the UART peripheral
+; 326 -> 9600
+; 162 -> 19200
+;  81 -> 38400
+;  54 -> 57600
+;  27 -> 115200
 
-;Write "TEST" to the text console
+				LDR 	R2, =0x51000008
+				LDR     R0, =27
+				STR		R0, [R2]
+				
+;Parity Bit configuration
+; 0X -> no parity. 0x00 and 0x01
+; 10 -> even parity, 0x2
+; 11 -> odd parity,  0x3
+
+				LDR 	R2, =0x5100000C
+				LDR     R0, =0x01
+				STR		R0, [R2]
+
+;Write "TEST" to the text console and the UART
+
 
 				LDR 	R1, =0x50000000
+				LDR 	R2, =0x51000000
 				MOVS	R0, #'T'
 				STR		R0, [R1]
+				STR		R0, [R2]
 
 				LDR 	R1, =0x50000000
+				LDR 	R2, =0x51000000
 				MOVS	R0, #'E'
 				STR		R0, [R1]
+				STR		R0, [R2]
 
 				LDR 	R1, =0x50000000
+				LDR 	R2, =0x51000000
 				MOVS	R0, #'S'
 				STR		R0, [R1]
+				STR		R0, [R2]
 				
 				LDR 	R1, =0x50000000
+				LDR 	R2, =0x51000000
 				MOVS	R0, #'T'
 				STR		R0, [R1]
+				STR		R0, [R2]
 
 ;Write four white dots to four corners of the frame buffer
 
-Again		    LDR 	R1, =0x50000004
+				LDR 	R1, =0x50000004
 				LDR		R0, =0xFF
 				STR		R0, [R1]
 
@@ -90,9 +119,42 @@ Again		    LDR 	R1, =0x50000004
 				LDR		R0, =0xFF
 				STR		R0, [R1]
 
+				B       WAIT
+;clear FIFO
+CLEAR_FIFO      LDR 	R1, =0x51000000
+                LDR 	R0, [R1]
+				B       WAIT
+
+
+;wait until receive buffer is not empty
+
+WAIT			LDR 	R1, =0x51000004
+				LDR		R0, [R1]
+				MOVS    R3, R0
+				MOVS	R1, #02 ; rx_done bit
+				ANDS	R0,  R0,  R1
+				CMP		R0,	#0x00
+				BNE		WAIT
+
+PARITY_CHECK	MOVS	R1, #01 ; parity flag
+				ANDS	R3,  R3 ,  R1
+				CMP		R3,	#0x00
+				BNE		CLEAR_FIFO
+
+;print received text to both UART and VGA
+
+				LDR 	R1, =0x51000000
+				LDR 	R2, =0x50000000
+				LDR 	R0, [R1]
+				STR		R0, [R1]
+				STR		R0, [R2]
+
+
+				B		WAIT
+
 				ENDP
 
-				ALIGN 		4					 ; Align to a word boundary 
+				ALIGN 		4					 ; Align to a word boundary
 
 		END                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
    

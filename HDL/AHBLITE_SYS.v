@@ -46,7 +46,19 @@ module AHBLITE_SYS(
     output wire    [2:0] vgaGreen,
     output wire    [1:0] vgaBlue,
     output wire          Hsync,          // VGA Horizontal Sync
-    output wire          Vsync//,          // VGA Vertical Sync
+    output wire          Vsync,          // VGA Vertical Sync
+   
+    // TO UART
+    input  wire          RsRx,
+    output wire          RsTx,
+	
+	// Switch Inputs
+    input  wire    [7:0] sw,
+    
+    // 7 Segment display
+    output wire    [6:0] seg,
+    output wire          dp,
+    output wire    [3:0] an//,
 
 
     
@@ -68,16 +80,19 @@ module AHBLITE_SYS(
     wire          hsel_mem;
     wire          hsel_led;
     wire          hsel_vga;
-    
+    wire          hsel_uart;
+
     // Slave read data
     wire   [31:0] hrdata_mem;
     wire   [31:0] hrdata_led;
     wire   [31:0] hrdata_vga;
-    
+    wire   [31:0] hrdata_uart;
+
     // Slave hready
     wire          hready_mem;
     wire          hready_led;
     wire          hready_vga;
+    wire          hready_uart;
 
     // CM-DS Sideband signals
     wire          lockup;
@@ -86,8 +101,8 @@ module AHBLITE_SYS(
     wire          txev;
     wire          sleeping;
     wire  [31:0]  irq;
-
-
+    
+    
     // Interrupt signals
     assign        irq = {32'b0};
     // assign        LED[7] = lockup;
@@ -232,7 +247,7 @@ module AHBLITE_SYS(
      
       .HSEL_S0(hsel_mem),
       .HSEL_S1(hsel_vga),
-      .HSEL_S2(),
+      .HSEL_S2(hsel_uart),
       .HSEL_S3(),
       .HSEL_S4(),
       .HSEL_S5(),
@@ -253,7 +268,7 @@ module AHBLITE_SYS(
      
       .HRDATA_S0(hrdata_mem),
       .HRDATA_S1(hrdata_vga),
-      .HRDATA_S2(),
+      .HRDATA_S2(hrdata_uart),
       .HRDATA_S3(),
       .HRDATA_S4(),
       .HRDATA_S5(),
@@ -265,7 +280,7 @@ module AHBLITE_SYS(
      
       .HREADYOUT_S0(hready_mem),
       .HREADYOUT_S1(hready_vga),
-      .HREADYOUT_S2(),
+      .HREADYOUT_S2(hready_uart),
       .HREADYOUT_S3(),
       .HREADYOUT_S4(),
       .HREADYOUT_S5(),
@@ -280,42 +295,112 @@ module AHBLITE_SYS(
     );
 
     // AHBLite Peripherals
+    
+    // AHBLite Memory Controller 
+    AHB2MEM uAHB2RAM (
+      //AHBLITE Signals
+      .HSEL(hsel_mem),
+      .HCLK(fclk), 
+      .HRESETn(hresetn), 
+      .HREADY(hreadys),     
+      .HADDR(haddrs),
+      .HTRANS(htranss), 
+      .HWRITE(hwrites),
+      .HSIZE(hsizes),
+      .HWDATA(hwdatas), 
+      
+      .HRDATA(hrdata_mem), 
+      .HREADYOUT(hready_mem)
+    );
 
-    // AHB-Lite RAM
-AHB2MEM uAHB2RAM (
-  //AHBLITE Signals
-  .HSEL(hsel_mem),
-  .HCLK(fclk), 
-  .HRESETn(hresetn), 
-  .HREADY(hreadys),     
-  .HADDR(haddrs),
-  .HTRANS(htranss), 
-  .HWRITE(hwrites),
-  .HSIZE(hsizes),
-  .HWDATA(hwdatas), 
-  
-  .HRDATA(hrdata_mem), 
-  .HREADYOUT(hready_mem)
-);
-
-
+            
+    
   // AHBLite VGA Controller  
-AHBVGA uAHBVGA (
-    .HCLK(fclk), 
-    .HRESETn(hresetn), 
-    .HADDR(haddrs), 
-    .HWDATA(hwdatas), 
-    .HREADY(hreadys), 
-    .HWRITE(hwrites), 
-    .HTRANS(htranss), 
-    .HSEL(hsel_vga), 
-    .HRDATA(hrdata_vga), 
-    .HREADYOUT(hready_vga), 
-    .hsync(Hsync), 
-    .vsync(Vsync), 
-    .rgb({vgaRed,vgaGreen,vgaBlue})
-);
-           
+    AHBVGA uAHBVGA (
+        .HCLK(fclk), 
+        .HRESETn(hresetn), 
+        .HADDR(haddrs), 
+        .HWDATA(hwdatas), 
+        .HREADY(hreadys), 
+        .HWRITE(hwrites), 
+        .HTRANS(htranss), 
+        .HSEL(hsel_vga), 
+        .HRDATA(hrdata_vga), 
+        .HREADYOUT(hready_vga), 
+        .hsync(Hsync), 
+        .vsync(Vsync), 
+        .rgb({vgaRed,vgaGreen,vgaBlue})
+    );
+    
+      // AHBLite UART Peripheral 
+    AHBUART uAHBUART(
+        .HCLK(fclk),
+        .HRESETn(hresetn),
+        .HADDR(haddrs),
+        .HTRANS(htranss),
+        .HWDATA(hwdatas),
+        .HWRITE(hwrites),
+        .HREADY(hreadys),
+        .HREADYOUT(hready_uart),
+        .HRDATA(hrdata_uart),
+        .HSEL(hsel_uart),
+    
+        .RsRx(RsRx),
+        .RsTx(RsTx)
+    );
+    
+            // AHBLite 7-segment Pheripheral
+         /*	 
+    AHB7SEGDEC uAHB7SEGDEC(
+        .HCLK(fclk),
+        .HRESETn(hresetn),
+        .HADDR(haddrs),
+        .HTRANS(htranss),
+        .HWDATA(hwdatas),
+        .HWRITE(hwrites),
+        .HREADY(hreadys),
+        .HREADYOUT(hready_7seg),
+        .HRDATA(hrdata_7seg),
+        .HSEL(hsel_7seg),
+    
+        .seg(seg),
+        .an(an),
+        .dp(dp)
+    );   
+    */ 
+            
+    // AHBLite timer
+    /*
+    AHBTIMER uAHBTIMER(
+        .HCLK(fclk),
+        .HRESETn(hresetn),
+        .HADDR(haddrs),
+        .HTRANS(htranss),
+        .HWDATA(hwdatas),
+        .HWRITE(hwrites),
+        .HREADY(hreadys),
+        .HREADYOUT(hready_timer),
+        .HRDATA(hrdata_timer),
+        .HSEL(hsel_timer)
+    );
+    */
+    // AHBLite GPIO    
+    /*AHBGPIO uAHBGPIO(
+        .HCLK(fclk),
+        .HRESETn(hresetn),
+        .HADDR(haddrs),
+        .HWRITE(hwrites),
+        .HWDATA(hwdatas),
+        .HTRANS(htranss),
+        .HSEL(hsel_gpio),
+        .HREADY(hreadys),
+        .GPIOIN({8'b00000000, sw[7:0]}),
+        .HREADYOUT(hready_gpio),
+        .HRDATA(hrdata_gpio),
+        .GPIOOUT(LED[7:0])
+    );
+    */
+        
  
     
 endmodule
