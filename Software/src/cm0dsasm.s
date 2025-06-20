@@ -68,8 +68,19 @@ Reset_Handler   PROC
 AGAIN           
                 ;Read from switch, and output to LEDs
                 
-
+                LDR     R1, =0x53000004     ;GPIO direction reg
+                MOVS    R0, #00             ;direction input
+                STR     R0, [R1]
                 
+                LDR     R1, =0x53000000     ;GPIO data reg
+                LDR     R2, [R1]            ;input data from the switch
+                
+                LDR     R1, =0x53000004     ;change direction to output
+                MOVS    R0, #01
+                STR     R0, [R1]            
+
+                LDR     R1, =0x53000000     ;output to LED
+                STR     R2, [R1]
 
                 ;Read the current timer value, and output to 7-segments
                 
