@@ -8,47 +8,47 @@
 
 ; Vector Table Mapped to Address 0 at Reset
 
-						PRESERVE8
-                		THUMB
+                        PRESERVE8
+                        THUMB
 
-        				AREA	RESET, DATA, READONLY	  			; First 32 WORDS is VECTOR TABLE
-        				EXPORT 	__Vectors
-					
-__Vectors		    	DCD		0x00003FFC
-        				DCD		Reset_Handler
-        				DCD		0  			
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD 	0
-        				DCD		0
-        				DCD		0
-        				DCD 	0
-        				DCD		0
-        				
-        				; External Interrupts
-						        				
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD		0
-        				DCD		0
+                        AREA    RESET, DATA, READONLY               ; First 32 WORDS is VECTOR TABLE
+                        EXPORT  __Vectors
+                    
+__Vectors               DCD     0x00003FFC
+                        DCD     Reset_Handler
+                        DCD     0           
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        
+                        ; External Interrupts
+                                                
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
+                        DCD     0
               
                 AREA |.text|, CODE, READONLY
 ;Reset Handler
@@ -56,29 +56,28 @@ Reset_Handler   PROC
                 GLOBAL Reset_Handler
                 ENTRY
 
-				;Write "TEST" to the text console and the UART
+                ;Write "TEST" to the text console and the UART
 
 
 
 
-				;Configure the timer
-				
+                ;Configure the timer
+                
 
 
-AGAIN			
-				;Read from switch, and output to LEDs
-				
+AGAIN           
+                ;Read from switch, and output to LEDs
+                
 
-				
+                
 
-				;Read the current timer value, and output to 7-segments
-				
-	
+                ;Read the current timer value, and output to 7-segments
+                
+    
 
 
-				ENDP
+                ENDP
 
-				ALIGN 		4					 ; Align to a word boundary
+                ALIGN       4                    ; Align to a word boundary
 
-		END                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-   
+        END
