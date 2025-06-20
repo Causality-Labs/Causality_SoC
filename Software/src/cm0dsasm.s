@@ -63,12 +63,13 @@ Reset_Handler   PROC
 
                 ;Configure the timer
                 
+                ; Write to Mask Register
+                LDR     R1, =0x53000008     ;Mask Register
+                MOVS    R0, #0x0F             ;Mask last 4 bits
+                STR     R0, [R1]
 
-
-AGAIN           
                 ;Read from switch, and output to LEDs
-                
-                LDR     R1, =0x53000004     ;GPIO direction reg
+AGAIN           LDR     R1, =0x53000004     ;GPIO direction reg
                 MOVS    R0, #00             ;direction input
                 STR     R0, [R1]
                 
@@ -81,11 +82,13 @@ AGAIN
 
                 LDR     R1, =0x53000000     ;output to LED
                 STR     R2, [R1]
+                ;LDR     R0, =0xFF
+                ;STR     R0, [R1]
 
                 ;Read the current timer value, and output to 7-segments
                 
     
-
+                B      AGAIN
 
                 ENDP
 

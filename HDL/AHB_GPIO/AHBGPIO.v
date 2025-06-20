@@ -3,7 +3,7 @@
 //                                                                              //
 //Copyright (c) 2012, ARM All rights reserved.                                  //
 //                                                                              //
-//THIS END USER LICENCE AGREEMENT (“LICENCE”) IS A LEGAL AGREEMENT BETWEEN      //
+//THIS END USER LICENCE AGREEMENT (ï¿½LICENCEï¿½) IS A LEGAL AGREEMENT BETWEEN      //
 //YOU AND ARM LIMITED ("ARM") FOR THE USE OF THE SOFTWARE EXAMPLE ACCOMPANYING  //
 //THIS LICENCE. ARM IS ONLY WILLING TO LICENSE THE SOFTWARE EXAMPLE TO YOU ON   //
 //CONDITION THAT YOU ACCEPT ALL OF THE TERMS IN THIS LICENCE. BY INSTALLING OR  //
@@ -56,12 +56,15 @@ module AHBGPIO(
   );
   
   localparam [7:0] gpio_data_addr = 8'h00;
-  localparam [7:0] gpio_dir_addr = 8'h04;
+  localparam [7:0] gpio_dir_addr  = 8'h04;
+  localparam [7:0] gpio_mask_addr = 8'h08;
+
   
   reg [15:0] gpio_dataout;
   reg [15:0] gpio_datain;
   reg [15:0] gpio_dir;
   reg [15:0] gpio_data_next;
+  reg [15:0] gpio_mask;
   reg [31:0] last_HADDR;
   reg [1:0] last_HTRANS;
   reg last_HWRITE;
@@ -81,6 +84,16 @@ module AHBGPIO(
       last_HWRITE <= HWRITE;
       last_HSEL <= HSEL;
     end
+  end
+  
+  always @(posedge HCLK, negedge HRESETn)
+  begin
+    if(!HRESETn)
+    begin
+      gpio_mask <= 16'h0000;
+    end
+    else if ((last_HADDR[7:0] == gpio_mask_addr) & last_HSEL & last_HWRITE & last_HTRANS[1])
+      gpio_mask <= HWDATA[15:0];
   end
 
   // Update in/out switch
@@ -102,7 +115,7 @@ module AHBGPIO(
       gpio_dataout <= 16'h0000;
     end
     else if ((gpio_dir == 16'h0001) & (last_HADDR[7:0] == gpio_data_addr) & last_HSEL & last_HWRITE & last_HTRANS[1])
-      gpio_dataout <= HWDATA[15:0];
+      gpio_dataout <= HWDATA[15:0] & gpio_mask;
   end
   
   // Update input value
