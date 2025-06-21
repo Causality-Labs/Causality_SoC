@@ -115,7 +115,7 @@ module AHBGPIO(
       gpio_dataout <= 16'h0000;
     end
     else if ((gpio_dir == 16'h0001) & (last_HADDR[7:0] == gpio_data_addr) & last_HSEL & last_HWRITE & last_HTRANS[1])
-      gpio_dataout <= HWDATA[15:0] & gpio_mask;
+      gpio_dataout <= ((gpio_dataout & ~gpio_mask) | (HWDATA[15:0] & gpio_mask));
   end
   
   // Update input value
