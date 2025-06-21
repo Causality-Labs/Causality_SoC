@@ -82,8 +82,8 @@ module AHBLITE_SYS(
     wire          hsel_vga;
     wire          hsel_uart;
     wire          hsel_gpio;
-    //wire          hsel_timer;
-    //wire          hsel_7seg;
+    wire          hsel_timer;
+    wire          hsel_7seg;
 
     // Slave read data
     wire   [31:0] hrdata_mem;
@@ -258,9 +258,9 @@ module AHBLITE_SYS(
       .HSEL_S0(hsel_mem),
       .HSEL_S1(hsel_vga),
       .HSEL_S2(hsel_uart),
-      //.HSEL_S3(hsel_timer),
+      .HSEL_S3(hsel_timer),
       .HSEL_S4(hsel_gpio),
-      //.HSEL_S5(hsel_7seg),
+      .HSEL_S5(hsel_7seg),
       .HSEL_S6(),
       .HSEL_S7(),
       .HSEL_S8(),
@@ -291,9 +291,9 @@ module AHBLITE_SYS(
       .HREADYOUT_S0(hready_mem),
       .HREADYOUT_S1(hready_vga),
       .HREADYOUT_S2(hready_uart),
-      //.HREADYOUT_S3(hready_timer),
+      .HREADYOUT_S3(hready_timer),
       .HREADYOUT_S4(hready_gpio),
-      //.HREADYOUT_S5(hready_7seg),
+      .HREADYOUT_S5(hready_7seg),
       .HREADYOUT_S6(1'b1),
       .HREADYOUT_S7(1'b1),
       .HREADYOUT_S8(1'b1),
@@ -359,37 +359,37 @@ module AHBLITE_SYS(
         .RsTx(RsTx)
     );
     
-    //     // AHBLite 7-segment Pheripheral	 
-    // AHB7SEGDEC uAHB7SEGDEC(
-    //     .HCLK(fclk),
-    //     .HRESETn(hresetn),
-    //     .HADDR(haddrs),
-    //     .HTRANS(htranss),
-    //     .HWDATA(hwdatas),
-    //     .HWRITE(hwrites),
-    //     .HREADY(hreadys),
-    //     .HREADYOUT(hready_7seg),
-    //     .HRDATA(hrdata_7seg),
-    //     .HSEL(hsel_7seg),
+        // AHBLite 7-segment Pheripheral	 
+    AHB7SEGDEC uAHB7SEGDEC(
+        .HCLK(fclk),
+        .HRESETn(hresetn),
+        .HADDR(haddrs),
+        .HTRANS(htranss),
+        .HWDATA(hwdatas),
+        .HWRITE(hwrites),
+        .HREADY(hreadys),
+        .HREADYOUT(hready_7seg),
+        .HRDATA(hrdata_7seg),
+        .HSEL(hsel_7seg),
 
-    //     .seg(seg),
-    //     .an(an),
-    //     .dp(dp)
-    // );    
+        .seg(seg),
+        .an(an),
+        .dp(dp)
+    );    
             
-    // // AHBLite timer
-    // AHBTIMER uAHBTIMER(
-    //     .HCLK(fclk),
-    //     .HRESETn(hresetn),
-    //     .HADDR(haddrs),
-    //     .HTRANS(htranss),
-    //     .HWDATA(hwdatas),
-    //     .HWRITE(hwrites),
-    //     .HREADY(hreadys),
-    //     .HREADYOUT(hready_timer),
-    //     .HRDATA(hrdata_timer),
-    //     .HSEL(hsel_timer)
-    // );
+    // AHBLite timer
+    AHBTIMER uAHBTIMER(
+        .HCLK(fclk),
+        .HRESETn(hresetn),
+        .HADDR(haddrs),
+        .HTRANS(htranss),
+        .HWDATA(hwdatas),
+        .HWRITE(hwrites),
+        .HREADY(hreadys),
+        .HREADYOUT(hready_timer),
+        .HRDATA(hrdata_timer),
+        .HSEL(hsel_timer)
+    );
     
     // AHBLite GPIO    
     AHBGPIO uAHBGPIO(

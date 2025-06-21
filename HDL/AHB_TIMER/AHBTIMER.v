@@ -3,7 +3,7 @@
 //                                                                              //
 //Copyright (c) 2012, ARM All rights reserved.                                  //
 //                                                                              //
-//THIS END USER LICENCE AGREEMENT (“LICENCE”) IS A LEGAL AGREEMENT BETWEEN      //
+//THIS END USER LICENCE AGREEMENT (ï¿½LICENCEï¿½) IS A LEGAL AGREEMENT BETWEEN      //
 //YOU AND ARM LIMITED ("ARM") FOR THE USE OF THE SOFTWARE EXAMPLE ACCOMPANYING  //
 //THIS LICENCE. ARM IS ONLY WILLING TO LICENSE THE SOFTWARE EXAMPLE TO YOU ON   //
 //CONDITION THAT YOU ACCEPT ALL OF THE TERMS IN THIS LICENCE. BY INSTALLING OR  //
@@ -52,11 +52,12 @@ module AHBTIMER(
   output reg timer_irq
 );
 
-  localparam [3:0] LDADDR = 4'h0;   //load register address
-  localparam [3:0] VALADDR = 4'h4;  //value register address
-  localparam [3:0] CTLADDR = 4'h8;  //control register address
-  localparam [3:0] CLRADDR = 4'hC;  //clear register address
-  
+  localparam [7:0] LDADDR = 8'h00;   //load register address
+  localparam [7:0] VALADDR = 8'h04;  //value register address
+  localparam [7:0] CTLADDR = 8'h08;  //control register address
+  localparam [7:0] CLRADDR = 8'h0C;  //clear register address
+  localparam [7:0] CMPADDR = 8'h10;
+
   localparam st_idle = 1'b0;
   localparam st_count = 1'b1;
   
@@ -77,7 +78,8 @@ module AHBTIMER(
   reg [31:0] load;
   reg clear;
   reg [31:0] value;
-  
+  reg [31:0] cmp_val;
+
   wire enable;
   wire mode;
 
@@ -115,7 +117,7 @@ module AHBTIMER(
     if(!HRESETn)
       control <= 4'b0000;
     else if(last_HWRITE & last_HSEL & last_HTRANS[1])
-      if(last_HADDR[3:0] == CTLADDR)
+      if(last_HADDR[7:0] == CTLADDR)
         control <= HWDATA[3:0];
         
         
@@ -124,15 +126,23 @@ module AHBTIMER(
     if(!HRESETn)
       load <= 32'h0000_0000;
     else if(last_HWRITE & last_HSEL & last_HTRANS[1])
-      if(last_HADDR[3:0] == LDADDR)
+      if(last_HADDR[7:0] == LDADDR)
         load <= HWDATA;
-  
+
+  //Compare signal
+  always @(posedge HCLK, negedge HRESETn)
+    if(!HRESETn)
+      cmp_val <= 32'h0000_0000;
+    else if(last_HWRITE & last_HSEL & last_HTRANS[1])
+      if(last_HADDR[7:0] == CMPADDR)
+        cmp_val <= HWDATA;
+
    //Clear signal      
   always @(posedge HCLK, negedge HRESETn)
     if(!HRESETn)
       clear <= 1'b0;
     else if(last_HWRITE & last_HSEL & last_HTRANS[1])
-      if(last_HADDR[3:0] == CLRADDR)
+      if(last_HADDR[7:0] == CLRADDR)
         clear <= HWDATA[0];
 
   
@@ -178,15 +188,23 @@ module AHBTIMER(
                 else if(mode == 1)      //If mode=1 timer is periodic counter;
                   value_next = load;
               end
+            else if(value == cmp_val)
+              begin
+                timer_irq_next = 1;
+                if(mode == 0)           //If mode=0 timer is free-running counter
+                  value_next = value-1;
+                else if(mode == 1)      //If mode=1 timer is periodic counter;
+                  value_next = load;
+              end
             else
               value_next = value-1;
     endcase
   end
   
   
-  assign HRDATA = (last_HADDR[3:0] == LDADDR) ? load :
-                  (last_HADDR[3:0] == VALADDR) ? value :
-                  (last_HADDR[3:0] == CTLADDR) ? control :
+  assign HRDATA = (last_HADDR[7:0] == LDADDR) ? load :
+                  (last_HADDR[7:0] == VALADDR) ? value :
+                  (last_HADDR[7:0] == CTLADDR) ? control :
                    32'h0000_0000;
             
 
