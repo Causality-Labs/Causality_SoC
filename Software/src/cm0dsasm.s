@@ -65,25 +65,24 @@ Reset_Handler   PROC
                 
                 ; Write to Mask Register
                 LDR     R1, =0x53000008     ;Mask Register
-                MOVS    R0, #0x0F             ;Mask last 4 bits
+                MOVS    R0, #0x0C           ;Mask last all bits
                 STR     R0, [R1]
 
                 ;Read from switch, and output to LEDs
 AGAIN           LDR     R1, =0x53000004     ;GPIO direction reg
-                MOVS    R0, #00             ;direction input
+                MOVS    R0, #0x0F           ;set bit [7:4] as inputs and pin [3:0] as outputs
                 STR     R0, [R1]
                 
                 LDR     R1, =0x53000000     ;GPIO data reg
                 LDR     R2, [R1]            ;input data from the switch
                 
-                LDR     R1, =0x53000004     ;change direction to output
-                MOVS    R0, #01
-                STR     R0, [R1]            
+                ;LDR     R1, =0x53000004     ;change direction to output
+                ;MOVS    R0, #01
+                ;STR     R0, [R1]
 
                 LDR     R1, =0x53000000     ;output to LED
+                LSRS    R2, R2, #4
                 STR     R2, [R1]
-                ;LDR     R0, =0xFF
-                ;STR     R0, [R1]
 
                 ;Read the current timer value, and output to 7-segments
                 

@@ -114,22 +114,26 @@ module AHBGPIO(
     begin
       gpio_dataout <= 16'h0000;
     end
-    else if ((gpio_dir == 16'h0001) & (last_HADDR[7:0] == gpio_data_addr) & last_HSEL & last_HWRITE & last_HTRANS[1])
-      gpio_dataout <= ((gpio_dataout & ~gpio_mask) | (HWDATA[15:0] & gpio_mask));
+    else if ((last_HADDR[7:0] == gpio_data_addr) & last_HSEL & last_HWRITE & last_HTRANS[1])
+      gpio_dataout <= ((gpio_dataout & ~(gpio_mask & gpio_dir)) | (HWDATA[15:0] & (gpio_mask & gpio_dir)));
   end
   
-  // Update input value
+  integer i;
   always @(posedge HCLK, negedge HRESETn)
   begin
-    if(!HRESETn)
-    begin
+    if (!HRESETn)
       gpio_datain <= 16'h0000;
+    else begin
+      for(i=0; i<16; i=i+1)
+      begin
+        // Use the output bit if configured as output; use the external input otherwise.
+        if(gpio_dir[i] == 1'b1)
+          gpio_datain[i] <= gpio_dataout[i];
+        else
+          gpio_datain[i] <= GPIOIN[i];
+      end
     end
-    else if (gpio_dir == 16'h0000)
-      gpio_datain <= GPIOIN;
-    else if (gpio_dir == 16'h0001)
-      gpio_datain <= GPIOOUT;
-  end
+  end  
          
   assign HRDATA[15:0] = gpio_datain;  
   assign GPIOOUT = gpio_dataout;
