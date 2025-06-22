@@ -60,7 +60,6 @@ Reset_Handler   PROC
 
 
 
-
                 ;Configure the timer
                 LDR     R1, =0x52000000         ;timer load value register
                 LDR     R0, =0xFFFFFFFF         ;maximum load value
@@ -70,8 +69,13 @@ Reset_Handler   PROC
                 LDR     R0, =0xFF00FFFF         ;Comapre value
                 STR     R0, [R1]
 
+                ; Sample Control value = 0x11,10001 ->  clk16:FREE_RUN:enable  
+                ; Sample Control value = 0x13,10011 ->  clk16:PERIODIC:enable
+                ; Sample Control value = 0x15,10101 ->  clk16:COMPARE:enable
+                ; Sample Control value = 0x17,10111 ->  clk16:PWM:enable
+
                 LDR     R1, =0x52000008         ;timer control register
-                MOVS    R0, #0x07               ;set prescaler, reload mode, start timer
+                MOVS    R0, #0x15               ;set prescaler, reload mode, start timer
                 STR     R0, [R1]
 
                 ; Write to Mask Register

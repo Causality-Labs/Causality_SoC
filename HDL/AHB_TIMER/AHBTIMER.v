@@ -58,6 +58,11 @@ module AHBTIMER(
   localparam [7:0] CLRADDR = 8'h0C;  //clear register address
   localparam [7:0] CMPADDR = 8'h10;
 
+  localparam [2:0] FREE_RUN = 3'b000;
+  localparam [2:0] PERIODIC = 3'b001;
+  localparam [2:0] COMPARE  = 3'b010;
+  localparam [2:0] PWM      = 3'b011;
+
   localparam st_idle = 1'b0;
   localparam st_count = 1'b1;
   
@@ -74,14 +79,14 @@ module AHBTIMER(
   reg [1:0] last_HTRANS;
 
   //internal registers
-  reg [3:0] control;
+  reg [4:0] control;
   reg [31:0] load;
   reg clear;
   reg [31:0] value;
   reg [31:0] cmp_val;
 
   wire enable;
-  wire mode;
+  wire [2:0] mode;
 
   //Prescaled clk signals
   wire clk16;       // HCLK/16
@@ -104,21 +109,28 @@ module AHBTIMER(
         last_HADDR <= HADDR;
         last_HTRANS <= HTRANS;
       end
-
+  
+  // Sample Control value = 0x11,10001 ->  clk16:FREE_RUN:enable  
+  // Sample Control value = 0x13,10011 ->  clk16:PERIODIC:enable
+  // Sample Control value = 0x15,10101 ->  clk16:COMPARE:enable
+  // Sample Control value = 0x17,10111 ->  clk16:PWM:enable
   //Prescale clk based on control[2]  01 = 16 ; 00 = 1;
-  assign timerclk = ((control[2]) ? clk16 : 1'b1);  //1'b1 signifies HCLK
+  assign timerclk = ((control[4]) ? clk16 : 1'b1);  //1'b1 signifies HCLK
                       
   assign enable = control[0];
-  assign mode = control[1];
-                      
-
+  assign mode = (control[3:1] == FREE_RUN) ? FREE_RUN :
+                (control[3:1] == PERIODIC) ? PERIODIC :
+                (control[3:1] == COMPARE)  ? COMPARE  :
+                (control[3:1] == PWM)      ? PWM      :
+                FREE_RUN;
+  
   //Control signal
   always @(posedge HCLK, negedge HRESETn)
     if(!HRESETn)
-      control <= 4'b0000;
+      control <= 5'b00000;
     else if(last_HWRITE & last_HSEL & last_HTRANS[1])
       if(last_HADDR[7:0] == CTLADDR)
-        control <= HWDATA[3:0];
+        control <= HWDATA[4:0];
         
         
   //Load signal
@@ -178,26 +190,52 @@ module AHBTIMER(
               value_next = load;
               next_state = st_count;
             end
+
       st_count:
-        if(enable && timerclk)      //if disabled timer stops
-            if(value == 32'h0000_0000)
-              begin
-                timer_irq_next = 1;
-                if(mode == 0)           //If mode=0 timer is free-running counter
-                  value_next = value-1;
-                else if(mode == 1)      //If mode=1 timer is periodic counter;
-                  value_next = load;
-              end
-            else if(value == cmp_val)
-              begin
-                timer_irq_next = 1;
-                if(mode == 0)           //If mode=0 timer is free-running counter
-                  value_next = value-1;
-                else if(mode == 1)      //If mode=1 timer is periodic counter;
-                  value_next = load;
-              end
-            else
-              value_next = value-1;
+        if(enable && timerclk)
+        begin
+          case(mode)
+            FREE_RUN: begin
+                        if (value == 32'h0000_0000)
+                          begin
+                            timer_irq_next = 1;
+                          end
+                        value_next = value - 1;
+                      end
+            PERIODIC: begin
+                        if (value == 32'h0000_0000)
+                          begin
+                            timer_irq_next = 1;
+                            value_next = load;
+                          end
+                        else
+                          value_next = value - 1;
+                      end
+            
+            COMPARE: begin
+                        if (value == cmp_val)
+                          begin
+                            timer_irq_next = 1;
+                            value_next = load;
+                          end
+                        else
+                          value_next = value - 1;
+                      end
+            PWM: begin
+                   if (value == cmp_val)
+                     begin
+                       timer_irq_next = 1;
+                       value_next = load;
+                     end
+                   else
+                     value_next = value - 1;
+                 end
+            default: begin
+                       // Optionally define a default behavior.
+                       value_next = value - 1;
+                     end
+          endcase
+        end
     endcase
   end
   
