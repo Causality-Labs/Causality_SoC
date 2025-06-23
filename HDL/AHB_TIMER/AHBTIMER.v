@@ -49,6 +49,7 @@ module AHBTIMER(
 	//Output
   output wire [31:0] HRDATA,
 	output wire HREADYOUT,
+	output wire PWM_OUT,
   output reg timer_irq
 );
 
@@ -71,6 +72,7 @@ module AHBTIMER(
   
   reg [31:0] value_next;
   reg timer_irq_next;
+  reg t_out_next;
   
   //AHB Registers
   reg last_HWRITE;
@@ -84,6 +86,7 @@ module AHBTIMER(
   reg clear;
   reg [31:0] value;
   reg [31:0] cmp_val;
+  reg t_out;
 
   wire enable;
   wire [2:0] mode;
@@ -170,11 +173,13 @@ module AHBTIMER(
       begin
         current_state <= st_idle;
         value <= 32'h0000_0000;
+        t_out <= 1'b1;
       end
     else
       begin
         value <= value_next;
         current_state <= next_state;
+        t_out <= t_out_next;
       end
   
   //Timer Operation and Next State logic
@@ -182,6 +187,7 @@ module AHBTIMER(
   begin
     next_state = current_state;
     value_next = value;
+    t_out_next = t_out;
     timer_irq_next = (clear) ? 0 : timer_irq;
     case(current_state)
       st_idle:
@@ -189,6 +195,7 @@ module AHBTIMER(
             begin
               value_next = load;
               next_state = st_count;
+              t_out_next = 1'b1;
             end
 
       st_count:
@@ -225,8 +232,15 @@ module AHBTIMER(
                    if (value == cmp_val)
                      begin
                        timer_irq_next = 1;
-                       value_next = load;
+                       t_out_next = 1'b0;
+                       value_next = value - 1;
                      end
+                    else if (value == 32'h0000_0000)
+                      begin
+                        timer_irq_next = 1;
+                        t_out_next = 1'b1;
+                        value_next = load;
+                      end
                    else
                      value_next = value - 1;
                  end
@@ -244,7 +258,7 @@ module AHBTIMER(
                   (last_HADDR[7:0] == VALADDR) ? value :
                   (last_HADDR[7:0] == CTLADDR) ? control :
                    32'h0000_0000;
-            
+  assign PWM_OUT = t_out;
 
 
 endmodule

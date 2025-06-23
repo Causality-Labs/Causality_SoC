@@ -14,6 +14,7 @@ set_property -dict {PACKAGE_PIN W18 IOSTANDARD LVCMOS33} [get_ports LED[4]]
 set_property -dict {PACKAGE_PIN U15 IOSTANDARD LVCMOS33} [get_ports LED[5]]
 set_property -dict {PACKAGE_PIN U14 IOSTANDARD LVCMOS33} [get_ports LED[6]]
 set_property -dict {PACKAGE_PIN V14 IOSTANDARD LVCMOS33} [get_ports LED[7]]
+set_property -dict {PACKAGE_PIN V13 IOSTANDARD LVCMOS33} [get_ports LED[8]]
 
 ##VGA Connector
 set_property -dict {PACKAGE_PIN G19 IOSTANDARD LVCMOS33} [get_ports vgaRed[0]]

@@ -39,7 +39,7 @@ module AHBLITE_SYS(
     input  wire          RESET,              // Reset
 
     // TO BOARD LEDs
-    output wire    [7:0] LED,
+    output wire    [8:0] LED,
 
     
    // VGA IO
@@ -388,6 +388,7 @@ module AHBLITE_SYS(
         .HREADY(hreadys),
         .HREADYOUT(hready_timer),
         .HRDATA(hrdata_timer),
+        .PWM_OUT(LED[8]),
         .HSEL(hsel_timer)
     );
     
