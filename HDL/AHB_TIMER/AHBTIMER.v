@@ -45,6 +45,7 @@ module AHBTIMER(
   input wire HWRITE,
   input wire HSEL,
   input wire HREADY,
+  input wire capture_event,
   
 	//Output
   output wire [31:0] HRDATA,
@@ -58,11 +59,13 @@ module AHBTIMER(
   localparam [7:0] CTLADDR = 8'h08;  //control register address
   localparam [7:0] CLRADDR = 8'h0C;  //clear register address
   localparam [7:0] CMPADDR = 8'h10;
+  localparam [7:0] CAPTADDR = 8'h14; 
 
   localparam [2:0] FREE_RUN = 3'b000;
   localparam [2:0] PERIODIC = 3'b001;
   localparam [2:0] COMPARE  = 3'b010;
   localparam [2:0] PWM      = 3'b011;
+  localparam [2:0] CAPTURE  = 3'b100;
 
   localparam st_idle = 1'b0;
   localparam st_count = 1'b1;
@@ -73,6 +76,7 @@ module AHBTIMER(
   reg [31:0] value_next;
   reg timer_irq_next;
   reg t_out_next;
+  reg [31:0] cap_val_next;
   
   //AHB Registers
   reg last_HWRITE;
@@ -86,6 +90,7 @@ module AHBTIMER(
   reg clear;
   reg [31:0] value;
   reg [31:0] cmp_val;
+  reg [31:0] cap_val;
   reg t_out;
 
   wire enable;
@@ -125,6 +130,7 @@ module AHBTIMER(
                 (control[3:1] == PERIODIC) ? PERIODIC :
                 (control[3:1] == COMPARE)  ? COMPARE  :
                 (control[3:1] == PWM)      ? PWM      :
+                (control[3:1] == CAPTURE)  ? CAPTURE  :
                 FREE_RUN;
   
   //Control signal
@@ -174,12 +180,14 @@ module AHBTIMER(
         current_state <= st_idle;
         value <= 32'h0000_0000;
         t_out <= 1'b1;
+        cap_val <= 32'h0000_0000;
       end
     else
       begin
         value <= value_next;
         current_state <= next_state;
         t_out <= t_out_next;
+        cap_val <= cap_val_next;
       end
   
   //Timer Operation and Next State logic
@@ -188,7 +196,9 @@ module AHBTIMER(
     next_state = current_state;
     value_next = value;
     t_out_next = t_out;
+    cap_val_next = cap_val;
     timer_irq_next = (clear) ? 0 : timer_irq;
+
     case(current_state)
       st_idle:
         if(enable && timerclk)
@@ -209,6 +219,7 @@ module AHBTIMER(
                           end
                         value_next = value - 1;
                       end
+
             PERIODIC: begin
                         if (value == 32'h0000_0000)
                           begin
@@ -228,6 +239,7 @@ module AHBTIMER(
                         else
                           value_next = value - 1;
                       end
+
             PWM: begin
                    if (value == cmp_val)
                      begin
@@ -244,6 +256,15 @@ module AHBTIMER(
                    else
                      value_next = value - 1;
                  end
+
+            CAPTURE: begin
+                 if(capture_event)
+                   begin
+                     cap_val_next = value;
+                     timer_irq_next = 1;
+                   end
+                   value_next = value - 1;
+                end
             default: begin
                        // Optionally define a default behavior.
                        value_next = value - 1;
@@ -257,6 +278,8 @@ module AHBTIMER(
   assign HRDATA = (last_HADDR[7:0] == LDADDR) ? load :
                   (last_HADDR[7:0] == VALADDR) ? value :
                   (last_HADDR[7:0] == CTLADDR) ? control :
+                  (last_HADDR[7:0] == CMPADDR) ? cmp_val :
+                  (last_HADDR[7:0] == CAPTADDR) ? cap_val :
                    32'h0000_0000;
   assign PWM_OUT = t_out;
 
