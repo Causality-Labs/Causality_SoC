@@ -3,7 +3,7 @@
 //                                                                              //
 //Copyright (c) 2012, ARM All rights reserved.                                  //
 //                                                                              //
-//THIS END USER LICENCE AGREEMENT (“LICENCE”) IS A LEGAL AGREEMENT BETWEEN      //
+//THIS END USER LICENCE AGREEMENT (ï¿½LICENCEï¿½) IS A LEGAL AGREEMENT BETWEEN      //
 //YOU AND ARM LIMITED ("ARM") FOR THE USE OF THE SOFTWARE EXAMPLE ACCOMPANYING  //
 //THIS LICENCE. ARM IS ONLY WILLING TO LICENSE THE SOFTWARE EXAMPLE TO YOU ON   //
 //CONDITION THAT YOU ACCEPT ALL OF THE TERMS IN THIS LICENCE. BY INSTALLING OR  //
@@ -57,10 +57,11 @@ module AHB7SEGDEC(
   output dp
   );
 
-  localparam [3:0] DIGIT1_ADDR = 4'h0;
-  localparam [3:0] DIGIT2_ADDR = 4'h4;
-  localparam [3:0] DIGIT3_ADDR = 4'h8;
-  localparam [3:0] DIGIT4_ADDR = 4'hC;
+  localparam [7:0] DIGIT1_ADDR = 4'h0;
+  localparam [7:0] DIGIT2_ADDR = 4'h4;
+  localparam [7:0] DIGIT3_ADDR = 4'h8;
+  localparam [7:0] DIGIT4_ADDR = 4'hC;
+  localparam [7:0] DISP_ADDR = 8'h10;
 
 
   reg last_HWRITE;
@@ -72,6 +73,7 @@ module AHB7SEGDEC(
   reg [7:0] DIGIT2 = 8'hB;
   reg [7:0] DIGIT3 = 8'hC; 
   reg [7:0] DIGIT4 = 8'hD;
+  reg DISP;
 
   assign HREADYOUT = 1'b1; //Always ready
 
@@ -92,24 +94,28 @@ module AHB7SEGDEC(
 		DIGIT2 <= 7'b0_1110;
 		DIGIT3 <= 7'b0_0000;
 		DIGIT4 <= 7'b0_0001;
+        DISP <= 1'b0;
 	 end
     else if(last_HWRITE & last_HSEL & last_HTRANS[1])
 	 begin
-		if(last_HADDR[3:0] == DIGIT1_ADDR)
+		if(last_HADDR[7:0] == DIGIT1_ADDR)
         	DIGIT1 <= HWDATA[7:0];
-		else if(last_HADDR[3:0] == DIGIT2_ADDR)
+		else if(last_HADDR[7:0] == DIGIT2_ADDR)
 			DIGIT2 <= HWDATA[7:0];
-		else if(last_HADDR[3:0] == DIGIT3_ADDR)
+		else if(last_HADDR[7:0] == DIGIT3_ADDR)
 			DIGIT3 <= HWDATA[7:0];
-		else if(last_HADDR[3:0] == DIGIT4_ADDR)
+		else if(last_HADDR[7:0] == DIGIT4_ADDR)
 			DIGIT4 <= HWDATA[7:0];
-	 end
+    else if(last_HADDR[7:0] == DISP_ADDR)
+			DISP <= HWDATA[7:0];
+	  end
 	end
 	 
-  assign HRDATA = (last_HADDR[3:0] == DIGIT1_ADDR) ? {24'h000_0000,DIGIT1} :
-                  (last_HADDR[3:0] == DIGIT2_ADDR) ? {24'h000_0000,DIGIT2} :
-                  (last_HADDR[3:0] == DIGIT3_ADDR) ? {24'h000_0000,DIGIT3} :
-                  (last_HADDR[3:0] == DIGIT4_ADDR) ? {24'h000_0000,DIGIT4} :
+  assign HRDATA = (last_HADDR[7:0] == DIGIT1_ADDR) ? {24'h000_0000,DIGIT1} :
+                  (last_HADDR[7:0] == DIGIT2_ADDR) ? {24'h000_0000,DIGIT2} :
+                  (last_HADDR[7:0] == DIGIT3_ADDR) ? {24'h000_0000,DIGIT3} :
+                  (last_HADDR[7:0] == DIGIT4_ADDR) ? {24'h000_0000,DIGIT4} :
+                  (last_HADDR[7:0] == DISP_ADDR)   ? {31'h000_0000,DISP}   :
                    32'h0000_0000;
 
 
@@ -154,31 +160,42 @@ parameter E      = 7'b0010000;
 parameter F      = 7'b0100000;
 parameter G      = 7'b1000000;
 
-assign seg_out =
-    (code[6:0] == 7'h0) ? A|B|C|D|E|F :
-    (code[6:0] == 7'h1) ? B|C :
-    (code[6:0] == 7'h2) ? A|B|G|E|D :
-    (code[6:0] == 7'h3) ? A|B|C|D|G :
+// HEX decoding: supports 0-9, A-F.
+wire [6:0] hex_decoded;
+assign hex_decoded =
+    (code[6:0] == 7'h0) ? (A|B|C|D|E|F) :
+    (code[6:0] == 7'h1) ? (B|C) :
+    (code[6:0] == 7'h2) ? (A|B|G|E|D) :
+    (code[6:0] == 7'h3) ? (A|B|C|D|G) :
+    (code[6:0] == 7'h4) ? (F|B|G|C) :
+    (code[6:0] == 7'h5) ? (A|F|G|C|D) : 
+    (code[6:0] == 7'h6) ? (A|F|G|C|D|E) :
+    (code[6:0] == 7'h7) ? (A|B|C) :
+    (code[6:0] == 7'h8) ? (A|B|C|D|E|F|G) :
+    (code[6:0] == 7'h9) ? (A|B|C|D|F|G) :
+    (code[6:0] == 7'ha) ? (A|F|B|G|E|C) :
+    (code[6:0] == 7'hb) ? (F|G|C|D|E) :
+    (code[6:0] == 7'hc) ? (A|F|E|D) :
+    (code[6:0] == 7'hd) ? (B|C|D|E|G) :
+    (code[6:0] == 7'he) ? (A|F|G|E|D) :
+    (code[6:0] == 7'hf) ? (A|F|G|E) : 7'b000_0000;
+    
+// DECIMAL decoding: supports 0-9; values >= 10 show blank (or some error code).
+wire [6:0] decimal_decoded;
+assign decimal_decoded =
+    (code[6:0] == 7'h0) ? (A|B|C|D|E|F) :
+    (code[6:0] == 7'h1) ? (B|C) :
+    (code[6:0] == 7'h2) ? (A|B|G|E|D) :
+    (code[6:0] == 7'h3) ? (A|B|C|D|G) :
+    (code[6:0] == 7'h4) ? (F|B|G|C) :
+    (code[6:0] == 7'h5) ? (A|F|G|C|D) :
+    (code[6:0] == 7'h6) ? (A|F|G|C|D|E) :
+    (code[6:0] == 7'h7) ? (A|B|C) :
+    (code[6:0] == 7'h8) ? (A|B|C|D|E|F|G) :
+    (code[6:0] == 7'h9) ? (A|B|C|D|F|G) :
+    7'b000_0000;   // For values 10-15, display blank in decimal mode
 
-    (code[6:0] == 7'h4) ? F|B|G|C :
-    (code[6:0] == 7'h5) ? A|F|G|C|D : 
-    (code[6:0] == 7'h6) ? A|F|G|C|D|E :
-    (code[6:0] == 7'h7) ? A|B|C :
-
-    (code[6:0] == 7'h8) ? A|B|C|D|E|F|G :
-    (code[6:0] == 7'h9) ? A|B|C|D|F|G :
-    (code[6:0] == 7'ha) ? A|F|B|G|E|C :
-    (code[6:0] == 7'hb) ? F|G|C|D|E :
-
-    (code[6:0] == 7'hc) ? G|E|D :
-    (code[6:0] == 7'hd) ? B|C|G|E|D :
-    (code[6:0] == 7'he) ? A|F|G|E|D :
-    (code[6:0] == 7'hf) ? A|F|G|E :
-    (code[6:0] == 7'hf) ? A|F|G|E :
-    (code[6:0] == 7'h10) ? A|B|C|D|E|F|G :		
-    (code[6:0] == 7'h11) ? G :				
-    (code[6:0] == 7'h12) ? A :				
-    (code[6:0] == 7'h13) ? D :				
-        7'b000_0000;
+// Now select the final seg_out based on mode:
+assign seg_out = (DISP) ? decimal_decoded : hex_decoded;
 
 endmodule
