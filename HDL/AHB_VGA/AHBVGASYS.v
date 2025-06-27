@@ -55,7 +55,7 @@ module AHBVGA(
   //Register locations
   localparam IMAGEADDR = 4'hA;
   localparam CONSOLEADDR = 4'h0;
-  
+  localparam RES_ADDR = 20'h3BF24;
   //Internal AHB signals
   reg last_HWRITE;
   reg last_HSEL;
@@ -163,7 +163,7 @@ module AHBVGA(
       end
     else if(last_HWRITE & last_HSEL & last_HTRANS[1] & HREADYOUT & sel_image)
       begin
-        if (last_HADDR[19:0] == 32'h3BF24)
+        if (last_HADDR[19:0] == RES_ADDR)
             RES_REG <= {6'b0, HWDATA[1:0]};
         else begin
           image_write <= 1'b1;
