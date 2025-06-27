@@ -114,7 +114,7 @@ module AHBLITE_SYS(
     
 
     // Interrupt signals
-    assign        irq = {32'b0};
+    assign        irq = {30'b0,uart_irq,1'b0};
     // assign        LED[7] = lockup;
     
 	  // Clock divider, divide the frequency by two, hence less time constraint 
@@ -356,7 +356,8 @@ module AHBLITE_SYS(
         .HSEL(hsel_uart),
     
         .RsRx(RsRx),
-        .RsTx(RsTx)
+        .RsTx(RsTx),
+        .uart_irq(uart_irq)
     );
     
         // AHBLite 7-segment Pheripheral	 
