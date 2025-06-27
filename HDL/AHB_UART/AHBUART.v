@@ -57,7 +57,8 @@ module AHBUART(
   
   output wire uart_irq  //Interrupt
 );
-
+  localparam BAUD_ADDR = 8'h08;
+  localparam PARITY_ADDR = 8'h0C;
 //Internal Signals
   
   //Data I/O between AHB and FIFO
@@ -129,12 +130,12 @@ module AHBUART(
         BAUD_DIVISOR <= 16'd162; // default divisor is 162 meaning the default baudrate is 
         w_baudgen <= 1'b0;
       end
-    else if(last_HTRANS[1] & last_HWRITE & last_HSEL &  last_HADDR[7:0]==8'h08)
+    else if(last_HTRANS[1] & last_HWRITE & last_HSEL &  last_HADDR[7:0] == BAUD_ADDR)
       begin
         BAUD_DIVISOR <= HWDATA[15:0];
         w_baudgen <= 1'b1;
       end
-    else if(last_HTRANS[1] & last_HWRITE & last_HSEL &  last_HADDR[7:0]==8'h0C)
+    else if(last_HTRANS[1] & last_HWRITE & last_HSEL &  last_HADDR[7:0] == PARITY_ADDR)
       begin
         PARITY_REGISTER <= HWDATA[15:0];
       end
