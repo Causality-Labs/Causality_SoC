@@ -114,7 +114,9 @@ module AHBLITE_SYS(
     
 
     // Interrupt signals
-    assign        irq = {30'b0,uart_irq,1'b0};
+    wire          uart_irq;
+    wire          timer_irq;
+    assign        irq = {30'b0, uart_irq, timer_irq};
     // assign        LED[7] = lockup;
     
 	  // Clock divider, divide the frequency by two, hence less time constraint 
@@ -390,7 +392,8 @@ module AHBLITE_SYS(
         .HREADYOUT(hready_timer),
         .HRDATA(hrdata_timer),
         .PWM_OUT(LED[8]),
-        .HSEL(hsel_timer)
+        .HSEL(hsel_timer),
+        .timer_irq(timer_irq)
     );
     
     // AHBLite GPIO    
