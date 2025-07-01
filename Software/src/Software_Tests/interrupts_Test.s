@@ -35,7 +35,7 @@ __Vectors               DCD     0x00003FFC
                                                 
                         DCD     Timer_Handler
                         DCD     UART_Handler
-                        DCD     0
+                        DCD     GPIO_Handler
                         DCD     0
                         DCD     0
                         DCD     0
@@ -66,13 +66,24 @@ Reset_Handler   PROC
                 LDR     R0, =27
                 STR     R0, [R2]
 
+                ;Configure GPIO registers
+                LDR     R1, =0x53000004     ;GPIO direction reg
+                MOVS    R0, #0x0F           ;set bit [7:4] as inputs and pin [3:0] as outputs
+                STR     R0, [R1]
+                ;Mask GPIO Pins
+                LDR     R1, =0x53000008     ;Mask Register
+                MOVS    R0, #0x0F           ;Mask last all bits
+                STR     R0, [R1]
+
+
+
                 LDR     R1, =0xE000E400           ;Interrupt Priority Register
-                LDR     R0, =0x00004000           ;Priority: IRQ0(Timer): 0x00, IRQ1(UART): 0x40
+                LDR     R0, =0x00804000           ;Priority: IRQ0(Timer): 0x00, IRQ1(UART): 0x40,  IRQ1(UART): 0x80
                 STR     R0, [R1]
                 LDR     R1, =0xE000E100           ;Interrupt Set Enable Register
                 ;Enable interrupts for UART and timer
-                ; bit [1] -> UART, bit[0] -> Timer.
-                LDR     R0, =0x00000003
+                ; bit [2] -> GPIO, bit [1] -> UART, bit[0] -> Timer.
+                LDR     R0, =0x00000007
                 STR     R0, [R1]
         
 
@@ -166,12 +177,27 @@ UART_Handler    PROC
                 EXPORT UART_Handler
 
                 PUSH    {R0,R1,R2,LR}
+
                 LDR     R1, =0x51000000               ;UART
                 LDR     R0, [R1]                      ;Get Data from UART
                 STR     R0, [R1]                      ;Write to UART
 
                 POP     {R0,R1,R2,PC}
                 ENDP
+
+GPIO_Handler   PROC
+               EXPORT  GPIO_Handler
+               PUSH    {R0,R1,R2,LR}
+
+               LDR     R1, =0x53000000     ;GPIO data reg
+               LDR     R2, [R1]            ;input data from the switch
+
+               LDR     R1, =0x53000000     ;output to LED
+               LSRS    R2, R2,#4
+               STR     R2, [R1]
+
+               POP     {R0,R1,R2,PC}
+               ENDP
 
                 ALIGN       4                    ; Align to a word boundary
 
