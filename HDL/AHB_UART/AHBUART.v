@@ -127,7 +127,7 @@ module AHBUART(
   begin
     if(!HRESETn)
       begin
-        BAUD_DIVISOR <= 16'd162; // default divisor is 162 meaning the default baudrate is 
+        BAUD_DIVISOR <= 16'd326; // default divisor is 162 meaning the default baudrate is 19200
         w_baudgen <= 1'b0;
       end
     else if(last_HTRANS[1] & last_HWRITE & last_HSEL &  last_HADDR[7:0] == BAUD_ADDR)

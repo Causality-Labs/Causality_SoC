@@ -105,7 +105,7 @@ Reset_Handler   PROC
                 ; Sample Control value = 0x17,10111 ->  clk16:PWM:enable
 
                 LDR     R1, =0x52000008         ;timer control register
-                MOVS    R0, #0x15               ;set prescaler, reload mode, start timer
+                MOVS    R0, #0x15
                 STR     R0, [R1]
 
                 ; Write to Mask Register
