@@ -147,7 +147,7 @@ module AHBGPIO(
     end
     else begin
       // When the current input differs from the previous value, raise the interrupt
-      if (GPIOIN != prev_GPIOIN)
+      if ((GPIOIN & ~gpio_dir) != (prev_GPIOIN & ~gpio_dir))
         gpio_irq_reg <= 1'b1;
       else
         gpio_irq_reg <= 1'b0;
