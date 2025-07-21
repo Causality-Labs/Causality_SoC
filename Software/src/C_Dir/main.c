@@ -16,6 +16,8 @@
 #define AHB_TIMER_CLR          (AHB_TIMER_BASE + 0x0C)
 
 #define AHB_GPIO_BASE               0x53000000
+#define AHB_GPIO_DIR               (AHB_GPIO_BASE + 0x04)
+#define AHB_GPIO_MASK              (AHB_GPIO_BASE + 0x08)
 
 #define AHB_7SEG_BASE               0x54000000
 
@@ -39,6 +41,7 @@ void UART_ISR()
     c = *(volatile unsigned int *)AHB_UART_BASE;
     *(volatile unsigned int *)AHB_UART_BASE = c;
 
+    return;
 }
 
 
@@ -71,6 +74,16 @@ void Timer_ISR()
     return;
 }
 
+void GPIO_ISR()
+{
+    unsigned int input;
+    input = *(volatile unsigned int*) AHB_GPIO_BASE;
+    input = input >> 4;
+     *(volatile unsigned int*) AHB_GPIO_BASE = input;
+
+    return;
+}
+
 //////////////////////////////////////////////////////////////////
 // Main Function
 //////////////////////////////////////////////////////////////////
@@ -81,31 +94,29 @@ int main(void) {
     unsigned int simple_counter = 0;
     unsigned int digit = 0;
     
-    // Initialize global variable since we bypassed C runtime
-    //counter = 0x31;  // Make sure counter is initialized to '1'
-    
-    // IMMEDIATELY write distinctive pattern to prove main() was called
-    //counter = 0x31; 
 
+    // Seven Segment setup
     *(volatile unsigned int*) AHB_7SEG_BASE = 0x01;                            // DIGIT1 = C
     *(volatile unsigned int*) (AHB_7SEG_BASE +0x04) = 0x02;                    // DIGIT2 = D  
     *(volatile unsigned int*) (AHB_7SEG_BASE +0x08) = 0x03;                    // DIGIT3 = E
     *(volatile unsigned int*) (AHB_7SEG_BASE +0x0C) = 0x00;                    // DIGIT4 = F
 
+    // Timer Setup
     *(volatile unsigned int*) AHB_TIMER_BASE = 50000000;           // Timer load register: 1 second at 50MHz
     *(volatile unsigned int*) AHB_TIMER_CTL = 0x03;                // PERIODIC mode + prescaler + enable
-    
+
+    // GPIO Setup
+    *(volatile unsigned int*) AHB_GPIO_DIR = 0x0F; //bit[7:4] are inputs, bits[3:0] are outputs
+    *(volatile unsigned int*) AHB_GPIO_MASK = 0xFF;
+
     // UART setup
     *(volatile unsigned int*) AHB_UART_BAUD = B115200;
     *(volatile unsigned int*) AHB_UART_PARITY = 0;
 
     // Interrupt setup
-    *(volatile unsigned int*) NVIC_INT_PRIORITY0 = 0x00004000;     // Priority: IRQ0(Timer): 0x00, IRQ1(UART): 0x40
-    *(volatile unsigned int*) NVIC_INT_ENABLE = 0x00000003;        // Enable interrupts for UART and timer
-    
-    // Enable global interrupts (critical!)
-    //__asm("CPSIE i");
-    
+    *(volatile unsigned int*) NVIC_INT_PRIORITY0 = 0x00804000;     // Priority: IRQ0(Timer): 0x00, IRQ1(UART): 0x40
+    *(volatile unsigned int*) NVIC_INT_ENABLE = 0x00000007;        // Enable interrupts for UART and timer
+
     // Simple infinite loop with counting - should now work with timer interrupts too
     while(1) {
         //Count faster to see if main loop is running
