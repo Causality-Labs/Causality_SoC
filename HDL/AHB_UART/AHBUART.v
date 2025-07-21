@@ -57,8 +57,8 @@ module AHBUART(
   
   output wire uart_irq  //Interrupt
 );
-  localparam BAUD_ADDR = 8'h08;
-  localparam PARITY_ADDR = 8'h0C;
+  localparam BAUD_ADDR = 8'h04;
+  localparam PARITY_ADDR = 8'h08;
 //Internal Signals
   
   //Data I/O between AHB and FIFO

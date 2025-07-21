@@ -8,8 +8,8 @@
 #define AHB_VGA_BASE                0x50000000
 
 #define AHB_UART_BASE               0x51000000
-#define AHB_UART_BAUD               (AHB_UART_BASE + 0x08)
-#define AHB_UART_PARITY             (AHB_UART_BASE + 0x0C)
+#define AHB_UART_BAUD               (AHB_UART_BASE + 0x04)
+#define AHB_UART_PARITY             (AHB_UART_BASE + 0x08)
 
 #define AHB_TIMER_BASE          0x52000000
 #define AHB_TIMER_CTL          (AHB_TIMER_BASE + 0x08)
