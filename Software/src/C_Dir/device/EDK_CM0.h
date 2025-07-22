@@ -41,9 +41,9 @@ typedef enum IRQn
   SysTick_IRQn                  = -1,       /*!< 15 Cortex-M0 System Tick Interrupt               */
 
 /******  CMSDK Specific Interrupt Numbers *********************************************************/
-  Timer_IRQn                  = 0,       
-  UART_IRQn                  = 1,       
-
+  Timer_IRQn                  = 0,
+  UART_IRQn                  = 1,
+  GPIO_IRQn                 = 2,
 } IRQn_Type;
 
 
