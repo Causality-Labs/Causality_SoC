@@ -68,7 +68,7 @@ int main(void)
     uart_init(B115200, 0);
     GPIO_init(1 << 3 | 1 << 2 | 1 << 1 | 1 << 0);
 
-    VGA_set_resolution(VGA_2x2);
+    VGA_set_resolution(VGA_8x8);
     VGA_plot_pixel(0, 0, 0xFF);
     VGA_plot_pixel(1, 0, 0xFF);
     VGA_plot_pixel(0, 1, 0xFF);

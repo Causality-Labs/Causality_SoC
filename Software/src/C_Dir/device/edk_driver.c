@@ -19,27 +19,37 @@ void VGA_plot_pixel(int x, int y, int col)
 
     int addr;
     int stride;
+    int max_x, max_y = 240;
 
     switch(current_res) {
         case VGA_2x2:
             stride = 256;
+            max_x = 256;
             break;
         case VGA_4x4:
             stride = 128;
+            max_x = 128;
             break;
         case VGA_8x8:
             stride = 64;
+            max_x = 64;
             break;
         default:
             stride = 128;
+            max_x = 128;
             break;
     }
-    
+
+    // Bounds check
+    if (x < 0 || x >= max_x || y < 0 || y >= max_y)
+        return;  // out-of-bounds, do nothing
+
     addr = y * stride + x;
     *(&(VGA->IMG) + addr) = col;
 
     return;
 }
+
 
 void VGA_set_resolution(VGA_Resolution_t mode)
 {
