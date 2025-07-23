@@ -69,8 +69,8 @@ typedef enum IRQn
  
 
 
-#define RAM_SIZE 					0x1000000				// 16 MB of PSRAM on Digilent Board
+#define RAM_SIZE 					0x20000				// 16 MB of PSRAM on Digilent Board
 
-#define RAM_START 					0x0
+#define RAM_START 					0x40000
 #define RAM_END						RAM_START + RAM_SIZE
 

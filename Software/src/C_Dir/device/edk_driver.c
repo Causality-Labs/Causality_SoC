@@ -15,12 +15,43 @@
 
 void VGA_plot_pixel(int x, int y, int col)
 {
-    //100x120 resolution
+    VGA_Resolution_t current_res = VGA_get_resolution();
+
     int addr;
-    addr=y*128+x;
-    *(&(VGA->IMG)+addr) = col;
+    int stride;
+
+    switch(current_res) {
+        case VGA_2x2:
+            stride = 256;
+            break;
+        case VGA_4x4:
+            stride = 128;
+            break;
+        case VGA_8x8:
+            stride = 64;
+            break;
+        default:
+            stride = 128;
+            break;
+    }
+    
+    addr = y * stride + x;
+    *(&(VGA->IMG) + addr) = col;
+
+    return;
 }
 
+void VGA_set_resolution(VGA_Resolution_t mode)
+{
+    VGA_RESOLUTION_REG = mode;
+}
+
+VGA_Resolution_t VGA_get_resolution(void)
+{
+    int res = 0;
+    res = VGA_RESOLUTION_REG;
+    return (VGA_Resolution_t)res;
+}
 //---------------------------------------------
 // 7 segment display driver function
 //---------------------------------------------

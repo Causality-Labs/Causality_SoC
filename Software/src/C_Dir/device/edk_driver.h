@@ -19,6 +19,9 @@
 #define AHB_7SEG_BASE       0x54000000
 #define NVIC_INT_ENABLE     0xE000E100
 
+// VGA Resolution register (distant offset)
+#define VGA_RESOLUTION_REG  (*(volatile unsigned int*)(AHB_VGA_BASE + 0x3BF24))
+
 
 // UART Baudrate configurations
 typedef enum {
@@ -28,6 +31,15 @@ typedef enum {
     B57600  = 54,
     B115200 = 27
 } UART_BaudRate_t;
+
+// VGA Resolution modes enum
+typedef enum {
+    VGA_2x2 = 0x01,
+    VGA_4x4 = 0x02,
+    VGA_8x8 = 0x03
+} VGA_Resolution_t;
+
+
 
 //--------------------------------------------------------
 //           Peripheral type define    
@@ -104,7 +116,9 @@ typedef struct
 //--------------------------------------------------------
 // Peripheral driver functions
 //--------------------------------------------------------
-void VGA_plot_pixel (int x, int y, int col);
+void VGA_set_resolution(VGA_Resolution_t mode);
+VGA_Resolution_t VGA_get_resolution(void);
+void VGA_plot_pixel(int x, int y, int col);
 
 void seven_seg_write(char dig1, char dig2, char dig3, char dig4, uint8_t disp_mode);
 

@@ -21,7 +21,7 @@ __heap_limit
                 AREA    RESET, DATA, READONLY
                 EXPORT  __Vectors
 
-__Vectors       DCD             0x00003FFC
+__Vectors       DCD             0x3FFC
                 DCD             Reset_Handler
                 DCD             0
                 DCD             0
@@ -63,8 +63,8 @@ Reset_Handler   PROC
                 GLOBAL Reset_Handler
                 ENTRY
                 IMPORT  __main
-                LDR     R0, =__main               
-                BX      R0                        ;Branch to __main
+                LDR     R0, =__main
+                BX      R0
                 ENDP
 
 Timer_Handler   PROC
