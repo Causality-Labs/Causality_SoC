@@ -15,11 +15,31 @@ void plot_hor_line(struct pt point1, struct pt point2, uint8_t colour)
     if (point1.x > point2.x)
         return;
     
+    uint32_t max_x = 128;
+
+    VGA_Resolution_t current_res = VGA_get_resolution();
+    switch(current_res) {
+        case VGA_2x2:
+            max_x = 200;
+            break;
+        case VGA_4x4:
+            max_x = 128;
+            break;
+        case VGA_8x8:
+            max_x = 64;
+            break;
+        default:
+            max_x = 128;
+            break;
+    }
+
     uint16_t diff = point2.x - point1.x;
     for(uint16_t i = 0; i < diff; i++)
     {
         VGA_plot_pixel(point1, colour);
         point1.x++;
+        if (point1.x >= max_x)
+            break;
     }
 
     return;
@@ -60,7 +80,7 @@ void VGA_plot_pixel(struct pt point, uint8_t colour)
 {
     VGA_Resolution_t current_res = VGA_get_resolution();
 
-    int addr;
+    uint32_t addr;
     int stride;
     uint16_t max_x;
     uint16_t max_y = 240;
@@ -68,7 +88,7 @@ void VGA_plot_pixel(struct pt point, uint8_t colour)
     switch(current_res) {
         case VGA_2x2:
             stride = 256;
-            max_x = 256;
+            max_x = 200;
             break;
         case VGA_4x4:
             stride = 128;
@@ -84,7 +104,7 @@ void VGA_plot_pixel(struct pt point, uint8_t colour)
             break;
     }
 
-    if (point.x < 0 || point.x >= max_x || point.y < 0 || point.y >= max_y)
+    if (point.x < 0 || point.x > max_x || point.y < 0 || point.y > max_y)
         return;
 
     addr = point.y * stride + point.x;

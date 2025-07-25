@@ -60,13 +60,23 @@ int main(void)
     uart_init(B115200, 0);
     GPIO_init(1 << 3 | 1 << 2 | 1 << 1 | 1 << 0);
     struct pt point1 = {.x = 0, .y = 0};
-    struct pt point2 = {.x = 10, .y = 0};
-    struct pt point3 = {.x = 0, .y = 0};
-    struct pt point4 = {.x = 0, .y = 10};
+    struct pt point2 = {.x = 199, .y = 0};
 
-    VGA_set_resolution(VGA_8x8);
+    struct pt point3 = {.x = 0, .y = 0};
+    struct pt point4 = {.x = 0, .y = 239};
+
+    struct pt point5 = {.x = 0, .y = 239};
+    struct pt point6 = {.x = 199, .y = 239};
+
+    struct pt point7 = {.x = 199, .y = 0};
+    struct pt point8 = {.x = 199, .y = 239};
+
+    VGA_set_resolution(VGA_4x4);
     VGA_plot_line(point1, point2, 0xF0, HORIZONTAL);
     VGA_plot_line(point3, point4, 0x0F, VERTICAL);
+
+    VGA_plot_line(point5, point6, 0xA0, HORIZONTAL);
+    VGA_plot_line(point7, point8, 0x0A, VERTICAL);
 
     NVIC_SetPriority(Timer_IRQn, 0x00);
     NVIC_SetPriority(UART_IRQn, 0x40);
