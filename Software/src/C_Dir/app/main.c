@@ -15,9 +15,6 @@
 #define Timer_Prescaler                     1 //Timer Prescaler, options are: 256, 16, 1 
 #define Timer_Load_Value                    (System_Tick_Frequency/Timer_Interrput_Frequency/Timer_Prescaler)
 
-#define foo_ENABLE         0xE000E100
-#define bar_PRIORITY0  0xE000E400
-
 static char dig1, dig2, dig3, dig4;
 
 void UART_ISR(void)
@@ -54,11 +51,6 @@ void Timer_ISR(void)
 
 void GPIO_ISR(void)
 {
-    GPIO_write_pin(0, GPIO_read_pin(4));
-    GPIO_write_pin(1, GPIO_read_pin(5));
-    GPIO_write_pin(2, GPIO_read_pin(6));
-    GPIO_write_pin(3, GPIO_read_pin(7));
-
     return;
 }
 
@@ -67,22 +59,20 @@ int main(void)
     seven_seg_write(0, 0, 0, 0, 0);
     uart_init(B115200, 0);
     GPIO_init(1 << 3 | 1 << 2 | 1 << 1 | 1 << 0);
+    struct pt point1 = {.x = 0, .y = 0};
+    struct pt point2 = {.x = 10, .y = 0};
+    struct pt point3 = {.x = 0, .y = 0};
+    struct pt point4 = {.x = 0, .y = 10};
 
     VGA_set_resolution(VGA_8x8);
-    VGA_plot_pixel(0, 0, 0xFF);
-    VGA_plot_pixel(1, 0, 0xFF);
-    VGA_plot_pixel(0, 1, 0xFF);
-    VGA_plot_pixel(1, 1, 0xFF);
-    VGA_plot_pixel(0, 2, 0xFF);
-    VGA_plot_pixel(1, 2, 0xFF);
-    VGA_plot_pixel(0, 3, 0xFF);
-    VGA_plot_pixel(1, 3, 0xFF);
+    VGA_plot_line(point1, point2, 0xF0, HORIZONTAL);
+    VGA_plot_line(point3, point4, 0x0F, VERTICAL);
 
     NVIC_SetPriority(Timer_IRQn, 0x00);
     NVIC_SetPriority(UART_IRQn, 0x40);
     NVIC_EnableIRQ(Timer_IRQn);
     NVIC_EnableIRQ(UART_IRQn);
-    timer_init(Timer_Load_Value,Timer_Prescaler,1);
+    timer_init(Timer_Load_Value, Timer_Prescaler, 1);
     timer_enable();
 	
     while(1)

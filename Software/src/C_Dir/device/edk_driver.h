@@ -25,21 +25,25 @@
 
 // UART Baudrate configurations
 typedef enum {
-    B9600   = 326,
-    B19200  = 162,
-    B38400  = 81,
-    B57600  = 54,
-    B115200 = 27
+  B9600   = 326,
+  B19200  = 162,
+  B38400  = 81,
+  B57600  = 54,
+  B115200 = 27
 } UART_BaudRate_t;
 
 // VGA Resolution modes enum
 typedef enum {
-    VGA_2x2 = 0x01,
-    VGA_4x4 = 0x02,
-    VGA_8x8 = 0x03
+  VGA_2x2 = 0x01,
+  VGA_4x4 = 0x02,
+  VGA_8x8 = 0x03
 } VGA_Resolution_t;
 
-
+// VGA Line type
+typedef enum {
+  HORIZONTAL,
+  VERTICAL,
+} VGA_Line_t;
 
 //--------------------------------------------------------
 //           Peripheral type define    
@@ -91,13 +95,13 @@ typedef struct
 // LED define 
 typedef struct
 {
-  volatile  unsigned int  BITS;        
+  volatile  unsigned int  BITS;
 } LED_TypeDef;
 
 // VGA define 
 typedef struct
 {
-  volatile  unsigned int  CONSOLE;        
+  volatile  unsigned int  CONSOLE;
   volatile  unsigned int  IMG; 
 } VGA_TypeDef;
 
@@ -111,6 +115,11 @@ typedef struct
 #define SEVSEG          ((SEVENSEG_TypeDef  *) AHB_7SEG_BASE  )
 #define VGA             ((VGA_TypeDef   *) AHB_VGA_BASE   )
 
+struct pt
+{
+  uint16_t x;
+  uint16_t y;
+};
 
 
 //--------------------------------------------------------
@@ -118,7 +127,11 @@ typedef struct
 //--------------------------------------------------------
 void VGA_set_resolution(VGA_Resolution_t mode);
 VGA_Resolution_t VGA_get_resolution(void);
-void VGA_plot_pixel(int x, int y, int col);
+void VGA_plot_pixel(struct pt point, uint8_t colour);
+void VGA_plot_line(struct pt point1, struct pt point2, uint8_t colour, VGA_Line_t Line_type);
+void plot_vert_line(struct pt point1, struct pt point2, uint8_t colour);
+void plot_hor_line(struct pt point1, struct pt point2, uint8_t colour);
+
 
 void seven_seg_write(char dig1, char dig2, char dig3, char dig4, uint8_t disp_mode);
 

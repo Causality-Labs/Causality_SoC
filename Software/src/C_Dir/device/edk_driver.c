@@ -10,16 +10,60 @@
 //---------------------------------------------
 // VGA driver function
 //---------------------------------------------
+void plot_hor_line(struct pt point1, struct pt point2, uint8_t colour)
+{
+    if (point1.x > point2.x)
+        return;
+    
+    uint16_t diff = point2.x - point1.x;
+    for(uint16_t i = 0; i < diff; i++)
+    {
+        VGA_plot_pixel(point1, colour);
+        point1.x++;
+    }
 
+    return;
+}
+
+void plot_vert_line(struct pt point1, struct pt point2, uint8_t colour)
+{
+    if (point1.y > point2.y)
+        return;
+    
+    uint16_t diff = point2.y - point1.y;
+    for(uint16_t i = 0; i < diff; i++)
+    {
+        VGA_plot_pixel(point1, colour);
+        point1.y++;
+    }
+
+    return;
+}
+
+void VGA_plot_line(struct pt point1, struct pt point2, uint8_t colour, VGA_Line_t Line_type)
+{
+    switch(Line_type) {
+        case HORIZONTAL:
+            plot_hor_line(point1, point2, colour);
+            break;
+        case VERTICAL:
+            plot_vert_line(point1, point2, colour);
+            break;
+        default:
+            plot_hor_line(point1, point2, colour);
+            break;
+    }
+    return;
+}
 //Plot a pixel to the image buffer
-
-void VGA_plot_pixel(int x, int y, int col)
+void VGA_plot_pixel(struct pt point, uint8_t colour)
 {
     VGA_Resolution_t current_res = VGA_get_resolution();
 
     int addr;
     int stride;
-    int max_x, max_y = 240;
+    uint16_t max_x;
+    uint16_t max_y = 240;
 
     switch(current_res) {
         case VGA_2x2:
@@ -40,12 +84,11 @@ void VGA_plot_pixel(int x, int y, int col)
             break;
     }
 
-    // Bounds check
-    if (x < 0 || x >= max_x || y < 0 || y >= max_y)
-        return;  // out-of-bounds, do nothing
+    if (point.x < 0 || point.x >= max_x || point.y < 0 || point.y >= max_y)
+        return;
 
-    addr = y * stride + x;
-    *(&(VGA->IMG) + addr) = col;
+    addr = point.y * stride + point.x;
+    *(&(VGA->IMG) + addr) = colour;
 
     return;
 }
