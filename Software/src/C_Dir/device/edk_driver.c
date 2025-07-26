@@ -14,24 +14,32 @@ void plot_hor_line(struct pt point1, struct pt point2, uint8_t colour)
 {
     if (point1.x > point2.x)
         return;
-    
-    uint32_t max_x = 128;
+
+    uint16_t max_x = 100;
+    uint16_t max_y = 120;
 
     VGA_Resolution_t current_res = VGA_get_resolution();
     switch(current_res) {
         case VGA_2x2:
             max_x = 200;
+            max_y = 240;
             break;
         case VGA_4x4:
-            max_x = 128;
+            max_x = 100;
+            max_y = 120;
             break;
         case VGA_8x8:
-            max_x = 64;
+            max_x = 50;
+            max_y = 60;
             break;
         default:
-            max_x = 128;
+            max_x = 100;
+            max_y = 120;
             break;
     }
+
+    if (point1.y >= max_y)
+        point1.y = max_y - 1;
 
     uint16_t diff = point2.x - point1.x;
     for(uint16_t i = 0; i < diff; i++)
@@ -39,7 +47,7 @@ void plot_hor_line(struct pt point1, struct pt point2, uint8_t colour)
         VGA_plot_pixel(point1, colour);
         point1.x++;
         if (point1.x >= max_x)
-            break;
+            point1.x = max_x - 1;
     }
 
     return;
@@ -49,12 +57,40 @@ void plot_vert_line(struct pt point1, struct pt point2, uint8_t colour)
 {
     if (point1.y > point2.y)
         return;
-    
+
+    uint16_t max_x = 100;
+    uint16_t max_y = 120;
+
+    VGA_Resolution_t current_res = VGA_get_resolution();
+    switch(current_res) {
+        case VGA_2x2:
+            max_x = 200;
+            max_y = 240;
+            break;
+        case VGA_4x4:
+            max_x = 100;
+            max_y = 120;
+            break;
+        case VGA_8x8:
+            max_x = 50;
+            max_y = 60;
+            break;
+        default:
+            max_x = 100;
+            max_y = 120;
+            break;
+    }
+
+    if (point1.x >= max_x)
+        point1.x = max_x - 1;
+
     uint16_t diff = point2.y - point1.y;
     for(uint16_t i = 0; i < diff; i++)
     {
         VGA_plot_pixel(point1, colour);
         point1.y++;
+        if (point1.y >= max_y)
+            point1.y = max_y - 1;
     }
 
     return;
@@ -73,6 +109,7 @@ void VGA_plot_line(struct pt point1, struct pt point2, uint8_t colour, VGA_Line_
             plot_hor_line(point1, point2, colour);
             break;
     }
+
     return;
 }
 //Plot a pixel to the image buffer
@@ -82,29 +119,33 @@ void VGA_plot_pixel(struct pt point, uint8_t colour)
 
     uint32_t addr;
     int stride;
-    uint16_t max_x;
-    uint16_t max_y = 240;
+    uint16_t max_x = 100;
+    uint16_t max_y = 120;
 
     switch(current_res) {
         case VGA_2x2:
             stride = 256;
             max_x = 200;
+            max_y = 240;
             break;
         case VGA_4x4:
             stride = 128;
-            max_x = 128;
+            max_x = 100;
+            max_y = 120;
             break;
         case VGA_8x8:
             stride = 64;
-            max_x = 64;
+            max_x = 50;
+            max_y = 60;
             break;
         default:
             stride = 128;
-            max_x = 128;
+            max_x = 100;
+            max_y = 120;
             break;
     }
 
-    if (point.x < 0 || point.x > max_x || point.y < 0 || point.y > max_y)
+    if (point.x < 0 || point.x >= max_x || point.y < 0 || point.y > max_y)
         return;
 
     addr = point.y * stride + point.x;

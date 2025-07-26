@@ -71,7 +71,7 @@ int main(void)
     struct pt point7 = {.x = 199, .y = 0};
     struct pt point8 = {.x = 199, .y = 239};
 
-    VGA_set_resolution(VGA_4x4);
+    VGA_set_resolution(VGA_2x2);
     VGA_plot_line(point1, point2, 0xF0, HORIZONTAL);
     VGA_plot_line(point3, point4, 0x0F, VERTICAL);
 
