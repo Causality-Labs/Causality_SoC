@@ -91,7 +91,7 @@ module AHBVGA(
     
   //Give time for the screen to refresh before writing
   assign HREADYOUT = ~scroll;   
- 
+  assign HRDATA = (last_HADDR[20:0] == 20'h3BF24) ? {24'h0000_00,RES_REG}:{32'h0000_0000};
   //VGA interface: control the synchronization and color signals for a particular resolution
   VGAInterface uVGAInterface (
     .CLK(HCLK), 
@@ -190,5 +190,4 @@ module AHBVGA(
   end
 
 endmodule
-  
-  
+
