@@ -121,10 +121,18 @@ struct pt
   uint32_t y;
 };
 
+struct rect
+{
+  struct pt top_left;
+  struct pt top_right;
+  struct pt bottom_left;
+  struct pt bottom_right;
+};
 
 //--------------------------------------------------------
 // Peripheral driver functions
 //--------------------------------------------------------
+void VGA_plot_rect(struct rect rectangle, uint8_t colour);
 void VGA_set_resolution(VGA_Resolution_t mode);
 VGA_Resolution_t VGA_get_resolution(void);
 void VGA_plot_pixel(struct pt point, uint8_t colour);
