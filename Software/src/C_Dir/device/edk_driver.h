@@ -115,6 +115,14 @@ typedef struct
 #define SEVSEG          ((SEVENSEG_TypeDef  *) AHB_7SEG_BASE  )
 #define VGA             ((VGA_TypeDef   *) AHB_VGA_BASE   )
 
+struct dim
+{
+  uint16_t max_x;
+  uint16_t max_y;
+  VGA_Resolution_t res;
+};
+
+
 struct pt
 {
   uint32_t x;
