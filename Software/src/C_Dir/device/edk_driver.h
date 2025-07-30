@@ -68,6 +68,7 @@ typedef struct
   volatile unsigned int  DATA;
   volatile unsigned int  BAUD;
   volatile unsigned int  PARITY;
+  volatile unsigned int  STATUS;
 } UART_TypeDef;
 
 
@@ -140,6 +141,7 @@ struct rect
 //--------------------------------------------------------
 // Peripheral driver functions
 //--------------------------------------------------------
+struct dim VGA_get_dimensions(void);
 void VGA_plot_rect(struct rect rectangle, uint8_t colour);
 void VGA_set_resolution(VGA_Resolution_t mode);
 VGA_Resolution_t VGA_get_resolution(void);

@@ -57,8 +57,10 @@ module AHBUART(
   
   output wire uart_irq  //Interrupt
 );
+  localparam DATA_ADDR = 8'h00;
   localparam BAUD_ADDR = 8'h04;
   localparam PARITY_ADDR = 8'h08;
+  localparam STATUS_ADDR = 8'h0C;
 //Internal Signals
   
   //Data I/O between AHB and FIFO
@@ -153,7 +155,11 @@ module AHBUART(
   
   
 
-  assign HRDATA = (last_HADDR[7:0]==8'h00) ? {24'h0000_00,uart_rdata}:{24'h0000_00,status};
+  assign HRDATA = (last_HADDR[7:0] == DATA_ADDR) ? {24'h000000, uart_rdata} :
+                  (last_HADDR[7:0] == BAUD_ADDR) ? {16'h0000, BAUD_DIVISOR} :
+                  (last_HADDR[7:0] == PARITY_ADDR) ? {16'h0000, PARITY_REGISTER} :
+                  (last_HADDR[7:0] == STATUS_ADDR) ? {24'h000000, status} :
+                  32'h00000000;
   assign status = {5'b00000, tx_full, rx_empty, uart_parity_err}; // rx_empty is bit 1 and parrity err is bit 0
   
   assign uart_irq = ~rx_empty; 
