@@ -12,10 +12,17 @@
 #include <stdint.h>
 #include <stdio.h>
 
+static int score;
+static int gamespeed;
+static int speed_table[10]= {6, 9, 12, 15, 20, 25, 30, 35, 40, 100};
+char key;
+
 void Game_Init(void);
 
 void UART_ISR(void)
 {
+    //key = UartGetc();
+
     return;
 }
 
@@ -32,14 +39,6 @@ void GPIO_ISR(void)
 int main(void)
 {
     SoC_init();
-    struct rect rectangle =
-    {
-        .top_left =     { .x = 0,   .y = 0 },
-        .top_right =    { .x = 199, .y = 0 },
-        .bottom_left =  { .x = 0,   .y = 239 },
-        .bottom_right = { .x = 199, .y = 239 },
-    };
-    VGA_plot_rect(rectangle, GREEN);
     Game_Init();
 
     while(1)
@@ -50,7 +49,18 @@ int main(void)
 
 void Game_Init(void)
 {
-    printf("\n\n-------- EDK Demo ---------");
+    struct rect rectangle =
+    {
+        .top_left =     { .x = 0,   .y = 0 },
+        .top_right =    { .x = 99, .y = 0 },
+        .bottom_left =  { .x = 0,   .y = 119 },
+        .bottom_right = { .x = 99, .y = 119 },
+    };
+    VGA_plot_rect(rectangle, BLUE);
+
+    timer_init((Timer_Load_Value_For_One_Sec/gamespeed), Timer_Prescaler, 1);
+    timer_enable();
+
     printf("\n------- Snake Game --------");
     printf("\nCentre btn ..... hard reset");
     printf("\nKeyboard r ..... soft reset");
@@ -60,12 +70,20 @@ void Game_Init(void)
     printf("\nKeyboard d ..... move right");
     printf("\nKeyboard space ...... pause");
     printf("\n---------------------------");  
-    printf("\nTo ran the game, make sure:");
+    printf("\nTo run the game, make sure:");
     printf("\n*UART terminal is activated");
-    printf("\n*UART baud rare:  19200 bps");
+    printf("\n*UART baud rare:  115200 bps");
     printf("\n*Keyboard is in lower case");
     printf("\n---------------------------");
     printf("\nPress any key to start\n");
+
+    while(KBHIT() == 0) 
+    {
+        // Do nothing.
+    }
+
+    printf("\nScore = %d\n", score);
+    start_interrupts();
 
     return;
 }

@@ -58,8 +58,9 @@ unsigned char UartPutc(unsigned char my_ch)
 // Get a character
 unsigned char UartGetc(void)
 {
-//	while(((UART->STATUS)&0x01)!=0x01){}
-	return UART->DATA;
+    //while(((UART->STATUS)&0x01)!=0x01){}
+
+    return UART->DATA;
 }
 
 int KBHIT(void){
