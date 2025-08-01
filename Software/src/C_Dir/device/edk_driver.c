@@ -176,7 +176,7 @@ void seven_seg_write(char dig1, char dig2, char dig3, char dig4, uint8_t disp_mo
 
 //Timer initialization
 //4-bits Control register: [0]: timer enable, [1] mode (free-run or reload) [2]: prescaler
-void timer_init(int load_value, int prescale, int mode)
+void timer_init(uint32_t load_value, uint32_t prescale, uint32_t mode)
 {
     int control;
     int prescale_bits;
@@ -186,7 +186,7 @@ void timer_init(int load_value, int prescale, int mode)
     else
         prescale_bits=0x00; 
 
-    control = ((prescale_bits << 2) | (mode << 1));
+    control = ((prescale_bits << 4) | (mode << 1));
     TIMER->INITVALUE = load_value;
     TIMER->CLEAR = 1;
     TIMER->CONTROL = control;
@@ -213,6 +213,10 @@ void timer_irq_clear(void)
     return;
 }
 
+uint32_t timer_curr_val(void)
+{
+    return TIMER->CURVALUE;
+}
 //---------------------------------------------
 // GPIO driver function
 //---------------------------------------------

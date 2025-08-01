@@ -150,12 +150,12 @@ void VGA_plot_line(struct pt point1, struct pt point2, uint8_t colour, VGA_Line_
 void plot_vert_line(struct pt point1, struct pt point2, uint8_t colour);
 void plot_hor_line(struct pt point1, struct pt point2, uint8_t colour);
 
-
 void seven_seg_write(char dig1, char dig2, char dig3, char dig4, uint8_t disp_mode);
 
-void timer_init(int load_value, int prescale, int mode);
+void timer_init(uint32_t load_value, uint32_t prescale, uint32_t mode);
 void timer_enable(void);
 void timer_irq_clear(void);
+uint32_t timer_curr_val(void);
 
 void GPIO_init(uint8_t direction);
 uint8_t GPIO_read_pin(uint8_t pin_number);

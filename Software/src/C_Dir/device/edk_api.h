@@ -20,6 +20,33 @@
 #define QUIT 0x71
 #define PAUSE 0x20
 
+#define N 200
+
+#define HEAD 0
+
+typedef enum {
+    SNAKE_UP,
+    SNAKE_DOWN,
+    SNAKE_LEFT,
+    SNAKE_RIGHT
+} Snake_direction_t;
+
+typedef struct {
+    struct pt point;
+    int reach;
+} targ;
+
+
+typedef struct {
+    struct pt point[N];
+    int node;
+    uint8_t colour;
+    Snake_direction_t direction;
+} Snake;
+
 void SoC_init(void);
 void clear_screen(void);
 void delay(int value);
+void plot_target(targ target, uint8_t colour);
+void plot_snake(Snake snake);
+int8_t random(char min, char max);
