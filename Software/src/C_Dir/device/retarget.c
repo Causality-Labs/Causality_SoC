@@ -45,13 +45,13 @@ FILE __stdin;
 
 unsigned char VGAPutc(unsigned char my_ch)
 {
-	VGA->CONSOLE = my_ch;
+    VGA->CONSOLE = my_ch;
   return (my_ch);
 }
 
 unsigned char UartPutc(unsigned char my_ch)
 {
-	UART->DATA=my_ch;
+    UART->DATA=my_ch;
   return (my_ch);
 }
 
@@ -59,15 +59,14 @@ unsigned char UartPutc(unsigned char my_ch)
 unsigned char UartGetc(void)
 {
     //while(((UART->STATUS)&0x01)!=0x01){}
-
     return UART->DATA;
 }
 
 int KBHIT(void){
-		if(((UART->STATUS)&0x01)==0x00)
-			return 1;
-		else
-			return 0;
+    if(((UART->STATUS)&0x02)==0x00)
+        return 1;
+    else
+        return 0;
 }
 
 int fputc(int ch, FILE *f) {

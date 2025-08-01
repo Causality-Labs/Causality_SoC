@@ -11,22 +11,6 @@
 // VGA driver function
 //---------------------------------------------
 
-static uint8_t scale_by_res(void)
-{
-    VGA_Resolution_t current_res = VGA_get_resolution();
-
-    switch(current_res) {
-        case VGA_2x2:
-            return 0;
-        case VGA_4x4:
-            return 1;
-        case VGA_8x8:
-            return 2;
-        default:
-            return 0;
-    }
-}
-
 struct dim VGA_get_dimensions(void)
 {
     struct dim dim;
@@ -56,32 +40,12 @@ struct dim VGA_get_dimensions(void)
 
 void VGA_plot_rect(struct rect rectangle, uint8_t colour)
 {
-    struct rect scaled_rect =
-    {
-        .top_left =     { .x = 0,   .y = 0 },
-        .top_right =    { .x = 0, .y = 0 },
-        .bottom_left =  { .x = 0,   .y = 0 },
-        .bottom_right = { .x = 0, .y = 0 },
-    };
-    uint8_t shift = scale_by_res();
 
-    scaled_rect.top_left.x     = rectangle.top_left.x     >> shift;
-    scaled_rect.top_left.y     = rectangle.top_left.y     >> shift;
+    plot_hor_line(rectangle.top_left, rectangle.top_right, colour);
+    plot_hor_line(rectangle.bottom_left, rectangle.bottom_right, colour);
 
-    scaled_rect.top_right.x    = rectangle.top_right.x    >> shift;
-    scaled_rect.top_right.y    = rectangle.top_right.y    >> shift;
-
-    scaled_rect.bottom_left.x  = rectangle.bottom_left.x  >> shift;
-    scaled_rect.bottom_left.y  = rectangle.bottom_left.y  >> shift;
-
-    scaled_rect.bottom_right.x = rectangle.bottom_right.x >> shift;
-    scaled_rect.bottom_right.y = rectangle.bottom_right.y >> shift;
-
-    plot_hor_line(scaled_rect.top_left, scaled_rect.top_right, colour);
-    plot_hor_line(scaled_rect.bottom_left, scaled_rect.bottom_right, colour);
-
-    plot_vert_line(scaled_rect.top_left, scaled_rect.bottom_left, colour);
-    plot_vert_line(scaled_rect.top_right, scaled_rect.bottom_right, colour);
+    plot_vert_line(rectangle.top_left, rectangle.bottom_left, colour);
+    plot_vert_line(rectangle.top_right, rectangle.bottom_right, colour);
 
     return;
 }
@@ -146,6 +110,7 @@ void VGA_plot_line(struct pt point1, struct pt point2, uint8_t colour, VGA_Line_
 
     return;
 }
+
 //Plot a pixel to the image buffer
 void VGA_plot_pixel(struct pt point, uint8_t colour)
 {

@@ -17,14 +17,14 @@ void SoC_init(void)
     clear_screen();
     uart_init(B115200, 0);
     VGA_set_resolution(VGA_4x4);
-    NVIC_SetPriority (Timer_IRQn, 0x00);
-    NVIC_SetPriority (UART_IRQn, 0x40);
-    //SCB -> SCR = 1<1;
+    NVIC_SetPriority(Timer_IRQn, 0x00);
+    NVIC_SetPriority(UART_IRQn, 0x40);
+    // SCB -> SCR = 1<1;
 
     return;
 }
 
-void start_interrupts()
+void start_interrupts(void)
 {
     NVIC_EnableIRQ(Timer_IRQn);
     NVIC_EnableIRQ(UART_IRQn);

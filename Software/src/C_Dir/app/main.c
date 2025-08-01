@@ -12,22 +12,51 @@
 #include <stdint.h>
 #include <stdio.h>
 
+//Maximum snake length
+#define N 200
+
 static int score;
 static int gamespeed;
 static int speed_table[10]= {6, 9, 12, 15, 20, 25, 30, 35, 40, 100};
-char key;
+static int pause;
+static int snake_has_moved;
+
+volatile char key = 0;
+volatile int key_pending = 0;
+volatile int timer_tick = 0;
+
+typedef struct {
+    int x;
+    int y;
+    int reach;
+} targ;
+
+
+typedef struct {
+    int x[N];
+    int y[N];
+    int node;
+    int direction;
+} Snake;
+
+targ target;
+Snake snake;
 
 void Game_Init(void);
 
 void UART_ISR(void)
 {
-    //key = UartGetc();
+    key = UartGetc();
+    key_pending = 1;
 
     return;
 }
 
 void Timer_ISR(void)
 {
+    timer_tick = 1;
+    timer_irq_clear(); 
+
     return;
 }
 
@@ -43,7 +72,42 @@ int main(void)
 
     while(1)
     { 
+        if (key_pending) {
+            key_pending = 0;
 
+            if (key == PAUSE) {
+                pause = !pause;
+                if (pause)
+                    NVIC_DisableIRQ(Timer_IRQn);
+                else
+                    NVIC_EnableIRQ(Timer_IRQn);
+            }
+
+            if (snake_has_moved) {
+                switch (key) {
+                    case UP:
+                        if (snake.direction != 4)
+                            snake.direction = 3;
+                        break;
+                    case RIGHT:
+                        if (snake.direction != 2)
+                            snake.direction = 1;
+                        break;
+                    case LEFT:
+                        if (snake.direction != 1)
+                            snake.direction = 2;
+                        break;
+                    case DOWN:
+                        if (snake.direction != 3)
+                            snake.direction = 4;
+                        break;
+                    default:
+                        break;
+                }
+
+                snake_has_moved = 0;
+            }
+        }
     }
 }
 
@@ -58,8 +122,21 @@ void Game_Init(void)
     };
     VGA_plot_rect(rectangle, BLUE);
 
+    score = 0;
+    gamespeed=speed_table[score];
+
     timer_init((Timer_Load_Value_For_One_Sec/gamespeed), Timer_Prescaler, 1);
     timer_enable();
+
+    target.reach = 1;
+    snake.direction = 1;
+
+    snake.x[0] = 60;
+    snake.y[0] = 80;
+    snake.x[1] = 62;
+    snake.y[1] = 80;
+    snake.node = 4;
+    pause = 0;
 
     printf("\n------- Snake Game --------");
     printf("\nCentre btn ..... hard reset");
@@ -84,6 +161,12 @@ void Game_Init(void)
 
     printf("\nScore = %d\n", score);
     start_interrupts();
+
+    return;
+}
+
+void Game_Update(void)
+{
 
     return;
 }
