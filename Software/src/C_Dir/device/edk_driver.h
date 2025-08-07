@@ -126,8 +126,8 @@ struct dim
 
 struct pt
 {
-  uint32_t x;
-  uint32_t y;
+  int x;
+  int y;
 };
 
 struct rect

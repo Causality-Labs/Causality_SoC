@@ -30,22 +30,55 @@ void delay(int value)
 
 void plot_target(targ target, uint8_t colour)
 {
-    struct pt end_pt =
-    {
-        .x = target.point.x + 2,
-        .y = target.point.y + 2
-    };
+    // struct pt end_pt =
+    // {
+    //     .x = target.point.x + 2,
+    //     .y = target.point.y + 2
+    // };
 
-    plot_hor_line(target.point, end_pt, colour);
+    //plot_hor_line(target.point, end_pt, colour);
+    VGA_plot_pixel(target.point, colour);
     return;
 }
 
-void plot_snake(Snake snake)
+
+void snake_plot(Snake *snake)
 {
-    for (int i = 0; i < snake.node; i++)
+    for (int i = 0; i < snake->node; i++)
     {
-        VGA_plot_pixel(snake.point[i], snake.colour);
-        VGA_plot_pixel(snake.point[snake.node - 1], BLACK);
+        VGA_plot_pixel(snake->point[i], snake->colour);
+    }
+
+    VGA_plot_pixel(snake->point[snake->node - 1], BLACK);
+
+    return;
+}
+
+void snake_move(Snake *snake)
+{
+    for (uint8_t i = snake->node - 1; i > 0; i--)
+    {
+        snake->point[i].x = snake->point[i - 1].x;
+        snake->point[i].y = snake->point[i - 1].y;
+    }
+
+    switch (snake->direction)
+    {
+        case SNAKE_RIGHT:
+            snake->point[HEAD].x += 1;
+            break;
+        case SNAKE_LEFT:
+            snake->point[HEAD].x -= 1;
+            break;
+        case SNAKE_DOWN:
+            snake->point[HEAD].y += 1;
+            break;
+        case SNAKE_UP:
+            snake->point[HEAD].y -= 1;
+            break;
+        default:
+            snake->point[HEAD].x -= 1;
+            break;
     }
 
     return;

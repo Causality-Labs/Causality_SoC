@@ -48,5 +48,6 @@ void SoC_init(void);
 void clear_screen(void);
 void delay(int value);
 void plot_target(targ target, uint8_t colour);
-void plot_snake(Snake snake);
+void snake_plot(Snake *snake);
+void snake_move(Snake *snake);
 int8_t random(char min, char max);

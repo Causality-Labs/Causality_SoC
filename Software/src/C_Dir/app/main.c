@@ -11,6 +11,7 @@
 #include "edk_api.h"
 #include <stdint.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 static int score;
 static int gamespeed;
@@ -31,6 +32,7 @@ void Game_Update(void);
 //void Game_Over(void);
 //void Game_Close(void);
 void target_gen(void);
+bool check_overlap(void);
 
 void UART_ISR(void)
 {
@@ -74,6 +76,16 @@ int main(void)
         }
         #endif
         if (key_pending == 1) {
+    
+            if (key == PAUSE) {
+                pause = !pause;
+
+                if (pause)
+                    NVIC_DisableIRQ(Timer_IRQn);
+                else
+                    NVIC_EnableIRQ(Timer_IRQn);
+            }
+
             if (snake_has_moved) {
                 switch (key) {
                     case UP:
@@ -155,9 +167,19 @@ void target_gen(void)
 
     target.point.y = random(2, 117);
     target.point.y = target.point.y - target.point.y % 2;
-    target.reach = 0;
 
     return;
+}
+
+bool check_overlap(void)
+{
+    for (uint8_t i = 0; i < snake.node; i++)
+    {
+        if (snake.point[i].x == target.point.x && snake.point[i].y == target.point.y) 
+            return true;
+    }
+
+    return false;
 }
 
 void Game_Init(void)
@@ -183,10 +205,18 @@ void Game_Init(void)
 
     snake.point[HEAD].x = 60;
     snake.point[HEAD].y = 80;
-    snake.point[HEAD + 1].x = 62;
+
+    snake.point[HEAD + 1].x = 61;
     snake.point[HEAD + 1].y = 80;
+
+    snake.point[HEAD + 2].x = 62;
+    snake.point[HEAD + 2].y = 80;
+
+    snake.point[HEAD + 3].x = 62;
+    snake.point[HEAD + 3].y = 80;
+    
     snake.colour = RED;
-    snake.node = 2;
+    snake.node = 4;
     pause = 0;
 
     printf("\n------- Snake Game --------");
@@ -219,32 +249,39 @@ void Game_Init(void)
 
 void Game_Update(void)
 {
-    for (uint8_t i = snake.node - 1; i > 0; i--)
-    {
-        snake.point[i].x = snake.point[i - 1].x;
-        snake.point[i].y = snake.point[i - 1].y;
+    if (pause == 1)
+
+        return;
+
+    if (target.reach == 1) {
+        do {
+            target_gen();
+        } while (check_overlap());
+
+        target.reach = 0;
+        plot_target(target, GREEN);
     }
 
-    switch (snake.direction)
+    snake_move(&snake);
+
+    if (snake.point[HEAD].x == target.point.x && snake.point[HEAD].y == target.point.y)
     {
-        case SNAKE_RIGHT:
-            snake.point[HEAD].x += 2;
-            break;
-        case SNAKE_LEFT:
-            snake.point[HEAD].x -= 2;
-            break;
-        case SNAKE_DOWN:
-            snake.point[HEAD].y += 2;
-            break;
-        case SNAKE_UP:
-            snake.point[HEAD].y -= 2;
-            break;
-        default:
-            snake.point[HEAD].x -= 2;
-            break;
+        plot_target(target, BLACK);
+        snake.point[snake.node].x = -10;
+        snake.point[snake.node].y = -10;
+        snake.node++;
+        target.reach = 1;
+        score++;
+
+        if (score <= 10)
+            gamespeed = speed_table[score];
+        
+        timer_init((Timer_Load_Value_For_One_Sec / gamespeed), Timer_Prescaler, 1);
+        timer_enable();
     }
 
-    plot_snake(snake);
+    snake_plot(&snake);
+
     snake_has_moved = 1;
     return;
 }
