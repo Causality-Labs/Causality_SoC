@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "edk_api.h": "c",
-        "edk_driver.h": "c"
+        "edk_driver.h": "c",
+        "core_cminstr.h": "c",
+        "core_cm0.h": "c"
     }
 }

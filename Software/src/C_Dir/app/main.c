@@ -33,6 +33,7 @@ void Game_Update(void);
 //void Game_Close(void);
 void target_gen(void);
 bool check_overlap(void);
+bool is_point_in_target(struct pt p, targ *target);
 
 void UART_ISR(void)
 {
@@ -67,16 +68,7 @@ int main(void)
 
     while(1)
     {
-        #if 0
         if (key_pending == 1) {
-            key_pending = 0;
-            plot_target(target, BLACK);
-            target_gen();
-            plot_target(target, GREEN);
-        }
-        #endif
-        if (key_pending == 1) {
-    
             if (key == PAUSE) {
                 pause = !pause;
 
@@ -117,46 +109,18 @@ int main(void)
             Game_Update();
             timer_tick = 0;
         }
-
-        #if 0
-        if (key_pending) {
-            key_pending = 0;
-
-            if (key == PAUSE) {
-                pause = !pause;
-                if (pause)
-                    NVIC_DisableIRQ(Timer_IRQn);
-                else
-                    NVIC_EnableIRQ(Timer_IRQn);
-            }
-
-            if (snake_has_moved) {
-                switch (key) {
-                    case UP:
-                        if (snake.direction != 4)
-                            snake.direction = 3;
-                        break;
-                    case RIGHT:
-                        if (snake.direction != 2)
-                            snake.direction = 1;
-                        break;
-                    case LEFT:
-                        if (snake.direction != 1)
-                            snake.direction = 2;
-                        break;
-                    case DOWN:
-                        if (snake.direction != 3)
-                            snake.direction = 4;
-                        break;
-                    default:
-                        break;
-                }
-
-                snake_has_moved = 0;
-            }
-        }
-            #endif
     }
+}
+
+static bool is_point_in_target(struct pt p, targ *target)
+{
+    int px = p.x;
+    int py = p.y;
+    int tx = target->point.x;
+    int ty = target->point.y;
+
+    return (px >= tx && px <= tx + 1 &&
+            py >= ty && py <= ty + 1);
 }
 
 void target_gen(void)
@@ -175,7 +139,7 @@ bool check_overlap(void)
 {
     for (uint8_t i = 0; i < snake.node; i++)
     {
-        if (snake.point[i].x == target.point.x && snake.point[i].y == target.point.y) 
+        if (is_point_in_target(snake.point[i], &target))
             return true;
     }
 
@@ -194,7 +158,7 @@ void Game_Init(void)
     VGA_plot_rect(rectangle, BLUE);
 
     score = 0;
-    gamespeed=speed_table[score];
+    gamespeed = speed_table[3];
 
     timer_init((Timer_Load_Value_For_One_Sec/gamespeed), Timer_Prescaler, 1);
     timer_enable();
@@ -250,7 +214,6 @@ void Game_Init(void)
 void Game_Update(void)
 {
     if (pause == 1)
-
         return;
 
     if (target.reach == 1) {
@@ -264,20 +227,26 @@ void Game_Update(void)
 
     snake_move(&snake);
 
-    if (snake.point[HEAD].x == target.point.x && snake.point[HEAD].y == target.point.y)
-    {
+    if (is_point_in_target(snake.point[HEAD], &target)) {
         plot_target(target, BLACK);
         snake.point[snake.node].x = -10;
         snake.point[snake.node].y = -10;
         snake.node++;
+
+        snake.point[snake.node].x = -11;
+        snake.point[snake.node].y = -10;
+        snake.node++;
+
+        snake.point[snake.node].x = -12;
+        snake.point[snake.node].y = -10;
+        snake.node++;
+
+        snake.point[snake.node].x = -12;
+        snake.point[snake.node].y = -10;
+        snake.node++;
+
         target.reach = 1;
         score++;
-
-        if (score <= 10)
-            gamespeed = speed_table[score];
-        
-        timer_init((Timer_Load_Value_For_One_Sec / gamespeed), Timer_Prescaler, 1);
-        timer_enable();
     }
 
     snake_plot(&snake);

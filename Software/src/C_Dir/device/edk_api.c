@@ -8,19 +8,9 @@
 
 int8_t random(char min, char max)
 {
-    int8_t i;
-    i = (int8_t)timer_curr_val();
-
-    if (i <= 0)
-        i = min;
-
-    while (i < min)
-        i = 2 * i;
-
-    while (i > max)
-        i = i >> 2;
-
-    return i;
+    uint8_t t = (uint8_t)timer_curr_val();
+    uint8_t range = max - min + 1;
+    return (t % range) + min;
 }
 
 void delay(int value)
@@ -28,16 +18,29 @@ void delay(int value)
     for (int i = 0; i < value; i++) {}
 }
 
-void plot_target(targ target, uint8_t colour)
+void plot_target(targ top_left, uint8_t colour)
 {
-    // struct pt end_pt =
-    // {
-    //     .x = target.point.x + 2,
-    //     .y = target.point.y + 2
-    // };
+    struct pt top_right =
+    {
+        .x = top_left.point.x + 1,
+        .y = top_left.point.y
+    };
 
-    //plot_hor_line(target.point, end_pt, colour);
-    VGA_plot_pixel(target.point, colour);
+    struct pt bottom_right =
+    {
+        .x = top_left.point.x + 1,
+        .y = top_left.point.y + 1
+    };
+
+    struct pt bottom_left =
+    {
+        .x = top_left.point.x,
+        .y = top_left.point.y + 1
+    };
+
+    plot_hor_line(top_left.point, top_right, colour);
+    plot_hor_line(bottom_left, bottom_right, colour);
+    //VGA_plot_pixel(target.point, colour);
     return;
 }
 
