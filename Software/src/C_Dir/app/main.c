@@ -28,9 +28,9 @@ targ target;
 Snake snake;
 
 void Game_Init(void);
-void Game_Update(void);
-//void Game_Over(void);
-//void Game_Close(void);
+bool Game_Update(void);
+bool Game_Over(void);
+void Game_Close(void);
 void target_gen(void);
 bool check_overlap(void);
 bool is_point_in_target(struct pt p, targ *target);
@@ -45,7 +45,6 @@ void UART_ISR(void)
 
 void Timer_ISR(void)
 {
-    //seven_seg_write(0, 0, 0, (snake_index++) % 10, 1);
     if (timer_tick == 0) {
         seven_seg_write(0,0,0,(snake_index++) % 10, 1);
         timer_tick = 1;
@@ -106,8 +105,14 @@ int main(void)
         }
 
         if (timer_tick == 1) {
-            Game_Update();
-            timer_tick = 0;
+            if (Game_Update() == true)
+                timer_tick = 0;
+            else
+            while (1)
+            {
+                __WFI(); 
+            }
+
         }
     }
 }
@@ -146,8 +151,47 @@ bool check_overlap(void)
     return false;
 }
 
+bool Game_Over(void)
+{
+    char check_key;
+
+    NVIC_DisableIRQ(UART_IRQn);
+    NVIC_DisableIRQ(Timer_IRQn);
+    printf("\nGame over\n");
+    printf("\nPress 'q' to quit");
+    printf("\nPress 'r' to replay");
+
+    while (1)
+    {
+        while(KBHIT() == 0){ /* Do Noting */}
+        check_key = UartGetc();
+        if (check_key == RESET)
+            return false;
+        else if (check_key == QUIT)
+            return true;
+        else
+            printf("\nInvalid input");
+    
+    }
+    return true;
+}
+
+void Game_Close(void)
+{
+    clear_screen();
+    clear_console();
+
+
+    NVIC_DisableIRQ(Timer_IRQn);
+    NVIC_DisableIRQ(UART_IRQn);
+
+    return;
+}
+
 void Game_Init(void)
 {
+    clear_screen();
+    clear_console();
     struct rect rectangle =
     {
         .top_left =     { .x = 0,   .y = 0 },
@@ -184,7 +228,7 @@ void Game_Init(void)
     pause = 0;
 
     printf("\n------- Snake Game --------");
-    printf("\nCentre btn ..... hard reset");
+    printf("\nCenter btn ..... hard reset");
     printf("\nKeyboard r ..... soft reset");
     printf("\nKeyboard w ........ move up");
     printf("\nKeyboard s ...... move down");
@@ -194,7 +238,7 @@ void Game_Init(void)
     printf("\n---------------------------");  
     printf("\nTo run the game, make sure:");
     printf("\n*UART terminal is activated");
-    printf("\n*UART baud rare:  115200 bps");
+    printf("\n*UART baud rate:  9600 bps");
     printf("\n*Keyboard is in lower case");
     printf("\n---------------------------");
     printf("\nPress any key to start\n");
@@ -211,10 +255,10 @@ void Game_Init(void)
     return;
 }
 
-void Game_Update(void)
+bool Game_Update(void)
 {
     if (pause == 1)
-        return;
+        return true;
 
     if (target.reach == 1) {
         do {
@@ -227,6 +271,7 @@ void Game_Update(void)
 
     snake_move(&snake);
 
+    // Snake eats Target
     if (is_point_in_target(snake.point[HEAD], &target)) {
         plot_target(target, BLACK);
         snake.point[snake.node].x = -10;
@@ -247,119 +292,35 @@ void Game_Update(void)
 
         target.reach = 1;
         score++;
+
+        printf("\nScore = %d\n", score);
+    }
+
+    if (snake_self_collision(&snake)) {
+        if (Game_Over() == true) {
+            Game_Close();
+            return false;
+        }
+        else {
+            Game_Init();
+            return true;
+        }
+    }
+
+    if (snake_wall_collision(&snake)) {
+        if (Game_Over() == true) {
+            Game_Close();
+            return false;
+        }
+        else {
+            Game_Init();
+            return true;
+        }
     }
 
     snake_plot(&snake);
 
     snake_has_moved = 1;
-    return;
+    return true;
 }
-#if 0
-void Game_Update(void)
-{
-    void Game_Update(void)
-    {
-        int overlap;
 
-        if (pause == 0)
-        {
-            if (target.reach == 1)
-            {
-                do {
-                    overlap = 0;
-                    target_gen();
-                    for (i = 0; i < snake.node; i++) {
-                        if (snake.x[i] == target.x && snake.y[i] == target.y) {
-                            overlap = 1;
-                            break;
-                        }
-                    }
-                } while (overlap == 1);
-
-                // Draw the new target
-                //rectangle(target.x, target.y, target.x + 2, target.y + 2, GREEN);
-                //plot_hor_line(target.point, target.point,GREEN);
-            }
-
-            // Shift the snake body
-            for (i = snake.node - 1; i > 0; i--) {
-                snake.x[i] = snake.x[i - 1];
-                snake.y[i] = snake.y[i - 1];
-            }
-
-            // Move the snake head
-            switch (snake.direction) {
-                case 1: 
-                    snake.x[0] += 2;
-                    break; // RIGHT
-                case 2:
-                    snake.x[0] -= 2;
-                    break; // LEFT
-                case 3:
-                    snake.y[0] -= 2;
-                    break; // UP
-                case 4:
-                    snake.y[0] += 2;
-                    break; // DOWN
-            }
-
-            // Detect if the snake reached the target
-            if (snake.x[0] == target.x && snake.y[0] == target.y) {
-                rectangle(target.x, target.y, target.x + 2, target.y + 2, BLACK); // Clear old target
-
-                snake.x[snake.node] = -10;
-                snake.y[snake.node] = -10;
-                snake.node++;
-                target.reach = 1;
-                score++;
-
-                if (score <= 10)
-                    gamespeed = speed_table[score];
-
-                timer_init((Timer_Load_Value_For_One_Sec / gamespeed), Timer_Prescaler, 1);
-                timer_enable();
-
-                write_LED(score);
-                printf("\nScore=%d\n", score);
-            }
-
-            // Check for self-collision
-            for (i = 3; i < snake.node; i++) {
-                if (snake.x[i] == snake.x[0] && snake.y[i] == snake.y[0]) {
-                    if (GameOver() == 0)
-                        Game_Close();
-                    else
-                        Game_Init();
-                    return;
-                }
-            }
-
-            // Check for wall collision
-            if (snake.x[0] < left_boundary + boundary_thick || snake.x[0] >= right_boundary ||
-                snake.y[0] < top_boundary + boundary_thick || snake.y[0] >= bottom_boundary)
-            {
-                if (GameOver() == 0)
-                    Game_Close();
-                else
-                    Game_Init();
-                return;
-            }
-
-            // Draw updated snake
-            for (i = 0; i < snake.node; i++)
-                rectangle(snake.x[i], snake.y[i], snake.x[i] + 2, snake.y[i] + 2, RED);
-
-            // Clear tail (last segment)
-            rectangle(snake.x[snake.node - 1], snake.y[snake.node - 1],
-                    snake.x[snake.node - 1] + 2, snake.y[snake.node - 1] + 2, BLACK);
-        }
-
-        snake_has_moved = 1;
-
-        Display_Int_Times();
-    }
-
-
-    return;
-}
-#endif

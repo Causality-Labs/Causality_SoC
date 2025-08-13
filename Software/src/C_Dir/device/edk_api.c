@@ -1,5 +1,6 @@
 #include "EDK_CM0.h"
 #include <string.h>
+#include <stdbool.h>
 #include "edk_driver.h"
 #include "edk_api.h"
 #include "core_cm0.h"
@@ -40,10 +41,47 @@ void plot_target(targ top_left, uint8_t colour)
 
     plot_hor_line(top_left.point, top_right, colour);
     plot_hor_line(bottom_left, bottom_right, colour);
-    //VGA_plot_pixel(target.point, colour);
+
     return;
 }
 
+bool snake_wall_collision(Snake *snake)
+{
+    struct dim screen = VGA_get_dimensions();
+    
+    int head_x = snake->point[HEAD].x;
+    int head_y = snake->point[HEAD].y;
+
+    // Right wall
+    if (head_x >= screen.max_x - 1)
+        return true;
+
+    // Left Wall
+    if (head_x <= 0)
+        return true;
+
+    // Bottom wall
+    if (head_y >= screen.max_y - 1)
+        return true;
+
+    // Top Wall
+    if (head_y <= 0)
+        return true;
+
+    return false;
+}
+
+bool snake_self_collision(Snake *snake)
+{
+    // Check if head collides with any body segment
+    // Start from index 1 (skip the head itself) and check all body segments
+    for (int i = 1; i < snake->node; i++) {
+        if (snake->point[HEAD].x == snake->point[i].x && 
+            snake->point[HEAD].y == snake->point[i].y)
+            return true;
+    }
+    return false;
+}
 
 void snake_plot(Snake *snake)
 {
@@ -118,6 +156,16 @@ void clear_screen(void)
             VGA_plot_pixel(point, BLACK);
         }
     }
+
+    return;
+}
+
+void clear_console(void)
+{
+    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 
     return;
 }

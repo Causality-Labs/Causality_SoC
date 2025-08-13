@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #define System_Tick_Frequency                   50000000
 #define Timer_Prescaler                         16                          //Timer Prescaler, options are: 16, 1 
 #define Timer_Load_Value_For_One_Sec            (System_Tick_Frequency/Timer_Prescaler)
@@ -46,8 +48,11 @@ typedef struct {
 
 void SoC_init(void);
 void clear_screen(void);
+void clear_console(void);
 void delay(int value);
 void plot_target(targ top_left, uint8_t colour);
 void snake_plot(Snake *snake);
 void snake_move(Snake *snake);
+bool snake_self_collision(Snake *snake);
+bool snake_wall_collision(Snake *snake);
 int8_t random(char min, char max);
