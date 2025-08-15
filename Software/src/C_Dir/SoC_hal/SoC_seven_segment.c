@@ -1,4 +1,4 @@
-#include "seven_segment.h"
+#include "SoC_seven_segment.h"
 
 void seven_seg_write(char dig1, char dig2, char dig3, char dig4, uint8_t disp_mode)
 {

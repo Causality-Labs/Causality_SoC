@@ -1,11 +1,9 @@
 #ifndef VGA_H
 #define VGA_H
 
-#include "core_cm0.h"
 #include <stdint.h>
-
-#define AHB_VGA_BASE        0x50000000
-#define AHB_VGA_RESOLUTION_REG  (*(volatile unsigned int*)(AHB_VGA_BASE + 0x3BF24))
+#include "core_cm0.h"
+#include "SoC_CM0.h"
 
 // VGA Resolution modes enum
 typedef enum {
@@ -19,14 +17,6 @@ typedef enum {
   HORIZONTAL,
   VERTICAL,
 } VGA_Line_t;
-
-typedef struct
-{
-  volatile  unsigned int  CONSOLE;
-  volatile  unsigned int  IMG; 
-} VGA_TypeDef;
-
-#define VGA             ((VGA_TypeDef   *) AHB_VGA_BASE)
 
 struct dim
 {
@@ -48,7 +38,6 @@ struct rect
   struct pt bottom_left;
   struct pt bottom_right;
 };
-
 
 struct dim VGA_get_dimensions(void);
 void VGA_plot_rect(struct rect rectangle, uint8_t colour);

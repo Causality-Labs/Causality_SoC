@@ -27,9 +27,10 @@
 #include <stdio.h>
 #include <time.h>
 #include <rt_misc.h>
-#include "EDK_CM0.h"
-#include "edk_driver.h"
-#include "edk_api.h"
+#include "SoC_CM0.h"
+#include "SoC_uart.h"
+#include "SoC_VGA.h"
+#include "SoC_api.h"
 
 #pragma import(__use_no_semihosting_swi)
 

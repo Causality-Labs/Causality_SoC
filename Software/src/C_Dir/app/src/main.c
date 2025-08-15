@@ -5,13 +5,20 @@
 // 3)A counter is incremented every second and displayed on the 7-segment display
 //------------------------------------------------------------------------------------------------------
 
-#include "EDK_CM0.h" 
-#include "core_cm0.h"
-#include "edk_driver.h"
-#include "edk_api.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
+
+#include "core_cm0.h"
+
+#include "SoC_CM0.h" 
+#include "SoC_gpio.h"
+#include "SoC_uart.h"
+#include "SoC_VGA.h"
+#include "SoC_seven_segment.h"
+#include "SoC_timer.h"
+
+#include "SoC_api.h"
 
 static int score;
 static int gamespeed;
@@ -34,31 +41,6 @@ void Game_Close(void);
 void target_gen(void);
 bool check_overlap(void);
 bool is_point_in_target(struct pt p, targ *target);
-
-void UART_ISR(void)
-{
-    key = UartGetc();
-    key_pending = 1;
-
-    return;
-}
-
-void Timer_ISR(void)
-{
-    if (timer_tick == 0) {
-        seven_seg_write(0,0,0,(snake_index++) % 10, 1);
-        timer_tick = 1;
-    }
-
-    timer_irq_clear(); 
-
-    return;
-}
-
-void GPIO_ISR(void)
-{
-    return;
-}
 
 int main(void)
 {

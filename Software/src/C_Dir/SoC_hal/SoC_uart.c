@@ -1,4 +1,4 @@
-#include "uart.h"
+#include "SoC_uart.h"
 
 void uart_init(UART_BaudRate_t baud_rate, uint8_t parity_bit)
 {

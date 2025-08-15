@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include "timer.h"
+#include "SoC_timer.h"
 
 
 //4-bits Control register: [0]: timer enable, [1] mode (free-run or reload) [2]: prescaler

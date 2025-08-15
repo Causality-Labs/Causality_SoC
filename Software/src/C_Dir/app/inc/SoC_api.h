@@ -46,6 +46,7 @@ typedef struct {
     Snake_direction_t direction;
 } Snake;
 
+void start_interrupts();
 void SoC_init(void);
 void clear_screen(void);
 void clear_console(void);

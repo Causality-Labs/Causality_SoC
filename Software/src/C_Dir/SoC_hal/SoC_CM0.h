@@ -1,27 +1,12 @@
-/**************************************************************************//**
- * @file     CMSDK_CM0.h
- * @brief    CMSIS Cortex-M0 Core Peripheral Access Layer Header File for
- *           Device CMSDK
- * @version  V3.01
- * @date     06. March 2012
- *
- * @note
- * Copyright (C) 2010-2012 ARM Limited. All rights reserved.
- *
- * @par
- * ARM Limited (ARM) is supplying this software for use with Cortex-M
- * processor based microcontrollers.  This file can be freely distributed
- * within development tools that are supporting such ARM based processors.
- *
- * @par
- * THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
- * OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE.
- * ARM SHALL NOT, IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR
- * CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
- *
- ******************************************************************************/
+#ifndef SOC_CM0_H
+#define SOC_CM0_H
 
+#define AHB_VGA_BASE        0x50000000
+#define AHB_VGA_RESOLUTION_REG  (*(volatile unsigned int*)(AHB_VGA_BASE + 0x3BF24))
+#define AHB_UART_BASE       0x51000000
+#define AHB_TIMER_BASE      0x52000000
+#define AHB_GPIO_BASE       0x53000000
+#define AHB_7SEG_BASE       0x54000000
 
 /*
  * ==========================================================================
@@ -46,7 +31,51 @@ typedef enum IRQn
   GPIO_IRQn                 = 2,
 } IRQn_Type;
 
+typedef struct
+{
+  volatile  unsigned int  CONSOLE;
+  volatile  unsigned int  IMG; 
+} VGA_TypeDef;
 
+typedef struct
+{
+  volatile unsigned int  DATA;
+  volatile unsigned int  BAUD;
+  volatile unsigned int  PARITY;
+  volatile unsigned int  STATUS;
+} UART_TypeDef;
+
+typedef struct
+{
+  volatile  unsigned int  INITVALUE;
+  volatile  unsigned int  CURVALUE;
+  volatile  unsigned int  CONTROL;
+  volatile  unsigned int  CLEAR;
+  volatile  unsigned int  CMP;
+  volatile  unsigned int  CAPT;
+} TIMER_TypeDef;
+
+typedef struct
+{
+  volatile  unsigned int  DATA;
+  volatile  unsigned int  DIR;
+  volatile  unsigned int  MASK;
+} GPIO_TypeDef;
+
+typedef struct
+{
+  volatile  unsigned int  DIGIT1;
+  volatile  unsigned int  DIGIT2;
+  volatile  unsigned int  DIGIT3;
+  volatile  unsigned int  DIGIT4;
+  volatile  unsigned int  DISP;
+} SEVENSEG_TypeDef;
+
+#define VGA             ((VGA_TypeDef   *) AHB_VGA_BASE)
+#define TIMER           ((TIMER_TypeDef *) AHB_TIMER_BASE )
+#define GPIO            ((GPIO_TypeDef  *) AHB_GPIO_BASE)
+#define SEVSEG          ((SEVENSEG_TypeDef  *) AHB_7SEG_BASE)
+#define UART            ((UART_TypeDef  *) AHB_UART_BASE)
 /*
  * ==========================================================================
  * ----------- Processor and Core Peripheral Section ------------------------
@@ -74,3 +103,4 @@ typedef enum IRQn
 #define RAM_START 					0x40000
 #define RAM_END						RAM_START + RAM_SIZE
 
+#endif /* SOC_CM0_H*/

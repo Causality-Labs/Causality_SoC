@@ -1,11 +1,17 @@
-#include "EDK_CM0.h"
 #include <string.h>
 #include <stdbool.h>
-#include "edk_driver.h"
-#include "edk_api.h"
 #include "core_cm0.h"
 #include "core_cmFunc.h"
 #include "core_cmInstr.h"
+
+#include "SoC_CM0.h" 
+#include "SoC_gpio.h"
+#include "SoC_uart.h"
+#include "SoC_VGA.h"
+#include "SoC_seven_segment.h"
+#include "SoC_timer.h"
+
+#include "SoC_api.h"
 
 int8_t random(char min, char max)
 {

@@ -1,20 +1,9 @@
 #ifndef UART_H
 #define UART_H
 
-#include "core_cm0.h"
 #include <stdint.h>
-
-#define AHB_UART_BASE       0x51000000
-
-typedef struct
-{
-  volatile unsigned int  DATA;
-  volatile unsigned int  BAUD;
-  volatile unsigned int  PARITY;
-  volatile unsigned int  STATUS;
-} UART_TypeDef;
-
-#define UART            ((UART_TypeDef  *) AHB_UART_BASE)
+#include "core_cm0.h"
+#include "SoC_CM0.h"
 
 typedef enum {
   B9600   = 326,

@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include "gpio.h"
+#include "SoC_gpio.h"
 
 void GPIO_init(uint8_t direction)
 {
