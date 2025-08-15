@@ -24,7 +24,6 @@ static int gamespeed;
 static int speed_table[10]= {6, 9, 12, 15, 20, 25, 30, 35, 40, 100};
 static int pause;
 static int snake_has_moved = 0;
-static int snake_index = 0;
 
 volatile char key = 0;
 volatile int key_pending = 0;
