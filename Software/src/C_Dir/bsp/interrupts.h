@@ -1,3 +1,9 @@
+#include "SoC_gpio.h"
+#include "SoC_uart.h"
+#include "SoC_VGA.h"
+#include "SoC_seven_segment.h"
+#include "SoC_timer.h"
+#include "SoC_api.h"
 #include "core_cm0.h"                       /* Cortex-M0 processor and core peripherals           */
 #include <stdint.h>
 

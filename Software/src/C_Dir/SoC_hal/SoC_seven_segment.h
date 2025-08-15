@@ -2,8 +2,8 @@
 #define SEVEN_SEGMENT_H
 
 #include <stdint.h>
-#include "core_cm0.h"
 #include "SoC_CM0.h"
+#include "core_cm0.h"
 
 #define DECIMAL_MODE 0x01
 #define HEX_MODE 0x00

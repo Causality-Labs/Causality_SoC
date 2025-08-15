@@ -4,8 +4,8 @@
 #include  "SoC_gpio.h"
 
 extern char key;
-extern key_pending;
-extern timer_tick;
+extern int key_pending;
+extern int timer_tick;
 
 void UART_ISR(void)
 {

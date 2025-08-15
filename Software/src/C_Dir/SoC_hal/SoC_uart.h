@@ -2,8 +2,8 @@
 #define UART_H
 
 #include <stdint.h>
-#include "core_cm0.h"
 #include "SoC_CM0.h"
+#include "core_cm0.h"
 
 typedef enum {
   B9600   = 326,

@@ -9,16 +9,15 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "core_cm0.h"
-
-#include "SoC_CM0.h" 
+#include "SoC_CM0.h"
 #include "SoC_gpio.h"
 #include "SoC_uart.h"
 #include "SoC_VGA.h"
 #include "SoC_seven_segment.h"
 #include "SoC_timer.h"
-
 #include "SoC_api.h"
+
+#include "core_cm0.h"
 
 static int score;
 static int gamespeed;

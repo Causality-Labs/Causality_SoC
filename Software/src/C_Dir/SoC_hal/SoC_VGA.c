@@ -31,11 +31,11 @@ struct dim VGA_get_dimensions(void)
 void VGA_plot_rect(struct rect rectangle, uint8_t colour)
 {
 
-    plot_hor_line(rectangle.top_left, rectangle.top_right, colour);
-    plot_hor_line(rectangle.bottom_left, rectangle.bottom_right, colour);
+    VGA_plot_hor_line(rectangle.top_left, rectangle.top_right, colour);
+    VGA_plot_hor_line(rectangle.bottom_left, rectangle.bottom_right, colour);
 
-    plot_vert_line(rectangle.top_left, rectangle.bottom_left, colour);
-    plot_vert_line(rectangle.top_right, rectangle.bottom_right, colour);
+    VGA_plot_vert_line(rectangle.top_left, rectangle.bottom_left, colour);
+    VGA_plot_vert_line(rectangle.top_right, rectangle.bottom_right, colour);
 
     return;
 }
@@ -88,13 +88,13 @@ void VGA_plot_line(struct pt point1, struct pt point2, uint8_t colour, VGA_Line_
 {
     switch(Line_type) {
         case HORIZONTAL:
-            plot_hor_line(point1, point2, colour);
+            VGA_plot_hor_line(point1, point2, colour);
             break;
         case VERTICAL:
-            plot_vert_line(point1, point2, colour);
+            VGA_plot_vert_line(point1, point2, colour);
             break;
         default:
-            plot_hor_line(point1, point2, colour);
+            VGA_plot_hor_line(point1, point2, colour);
             break;
     }
 

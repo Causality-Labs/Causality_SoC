@@ -1,17 +1,15 @@
 #include <string.h>
 #include <stdbool.h>
-#include "core_cm0.h"
-#include "core_cmFunc.h"
-#include "core_cmInstr.h"
-
 #include "SoC_CM0.h" 
 #include "SoC_gpio.h"
 #include "SoC_uart.h"
 #include "SoC_VGA.h"
 #include "SoC_seven_segment.h"
 #include "SoC_timer.h"
-
 #include "SoC_api.h"
+#include "core_cm0.h"
+#include "core_cmFunc.h"
+#include "core_cmInstr.h"
 
 int8_t random(char min, char max)
 {
@@ -45,8 +43,8 @@ void plot_target(targ top_left, uint8_t colour)
         .y = top_left.point.y + 1
     };
 
-    plot_hor_line(top_left.point, top_right, colour);
-    plot_hor_line(bottom_left, bottom_right, colour);
+    VGA_plot_hor_line(top_left.point, top_right, colour);
+    VGA_plot_hor_line(bottom_left, bottom_right, colour);
 
     return;
 }
