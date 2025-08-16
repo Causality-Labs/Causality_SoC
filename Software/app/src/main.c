@@ -172,6 +172,7 @@ void Game_Init(void)
 {
     clear_screen();
     clear_console();
+    
     struct rect rectangle =
     {
         .top_left =     { .x = 0,   .y = 0 },
@@ -182,6 +183,7 @@ void Game_Init(void)
     VGA_plot_rect(rectangle, BLUE);
 
     score = 0;
+    display_score_seven_seg(score);
     gamespeed = speed_table[3];
 
     timer_init((Timer_Load_Value_For_One_Sec/gamespeed), Timer_Prescaler, 1);
@@ -274,6 +276,7 @@ bool Game_Update(void)
         score++;
 
         printf("\nScore = %d\n", score);
+        display_score_seven_seg(score);
     }
 
     if (snake_self_collision(&snake)) {

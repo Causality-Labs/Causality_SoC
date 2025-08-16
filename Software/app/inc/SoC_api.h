@@ -47,14 +47,15 @@ typedef struct {
 } Snake;
 
 void random_init(void);
+int8_t random(char min, char max);
 void start_interrupts(void);
+void delay(int value);
 void SoC_init(void);
 void clear_screen(void);
 void clear_console(void);
-void delay(int value);
 void plot_target(targ top_left, uint8_t colour);
 void snake_plot(Snake *snake);
 void snake_move(Snake *snake);
 bool snake_self_collision(Snake *snake);
 bool snake_wall_collision(Snake *snake);
-int8_t random(char min, char max);
+void display_score_seven_seg(int score);

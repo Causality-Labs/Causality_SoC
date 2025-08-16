@@ -189,3 +189,15 @@ void clear_console(void)
 
     return;
 }
+
+void display_score_seven_seg(int score)
+{
+    int digit0 = score % 10;
+    int digit1 = (score / 10) % 10;
+    int digit2 = (score / 100) % 10;
+    int digit3 = (score / 1000) % 10;
+
+    seven_seg_write(digit3, digit2, digit1, digit0, DECIMAL_MODE);
+
+    return;
+}
