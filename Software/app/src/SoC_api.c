@@ -11,11 +11,27 @@
 #include "core_cmFunc.h"
 #include "core_cmInstr.h"
 
+static uint32_t random_state = 1;
+
+void random_init(void)
+{
+    random_state = timer_curr_val() ^ 0x12345678;
+}
+
 int8_t random(char min, char max)
 {
-    uint8_t t = (uint8_t)timer_curr_val();
+    // uint8_t t = (uint8_t)timer_curr_val();
+    // uint8_t range = max - min + 1;
+    // return (t % range) + min;
+
+    random_state = random_state * 1664525 + 1013904223;
+
+    // Mix with timer for entropy
+    uint32_t mixed = random_state ^ timer_curr_val();
+    
     uint8_t range = max - min + 1;
-    return (t % range) + min;
+    return ((mixed >> 8) % range) + min;
+
 }
 
 void delay(int value)
@@ -135,9 +151,9 @@ void SoC_init(void)
     clear_screen();
     uart_init(B9600, 0);
     VGA_set_resolution(VGA_4x4);
+    random_init();
     NVIC_SetPriority(Timer_IRQn, 0x00);
     NVIC_SetPriority(UART_IRQn, 0x40);
-    // SCB -> SCR = 1<1;
 
     return;
 }
