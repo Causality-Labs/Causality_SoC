@@ -49,6 +49,7 @@ typedef struct {
 void random_init(void);
 int8_t random(char min, char max);
 void start_interrupts(void);
+void stop_interrupts(void);
 void delay(int value);
 void SoC_init(void);
 void clear_screen(void);

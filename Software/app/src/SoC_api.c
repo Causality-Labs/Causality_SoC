@@ -166,6 +166,14 @@ void start_interrupts(void)
     return;
 }
 
+void stop_interrupts(void)
+{
+    NVIC_DisableIRQ(Timer_IRQn);
+    NVIC_DisableIRQ(UART_IRQn);
+
+    return;
+}
+
 void clear_screen(void)
 {
     struct dim dimension = VGA_get_dimensions();

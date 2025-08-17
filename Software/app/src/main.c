@@ -135,8 +135,7 @@ bool Game_Over(void)
 {
     char check_key;
 
-    NVIC_DisableIRQ(UART_IRQn);
-    NVIC_DisableIRQ(Timer_IRQn);
+    stop_interrupts();
     printf("\nGame over\n");
     printf("\nPress 'q' to quit");
     printf("\nPress 'r' to replay");
