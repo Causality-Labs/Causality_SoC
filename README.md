@@ -1,10 +1,6 @@
-# ARM Cortex-M0 System-on-Chip (SoC) on FPGA
+# Causality SoC
 
-A complete embedded system implementation featuring an **ARM Cortex-M0 DesignStart** processor running on FPGA hardware, designed for educational purposes and demonstrating real-world embedded systems design principles.
-
-## Project Overview
-
-This project implements a fully Micro Controller Unit on a **Basys 3 FPGA development board**. It demonstrates how modern embedded systems are built by integrating a professional ARM processor with custom peripherals through industry-standard bus protocols.
+This project is my take on the Introduction to SoC course offered by Arm, which you can find here: https://www.arm.com/resources/education/education-kits/introduction-to-soc. After completing the course, I designed a custom SoC on a Digilent Basys 3 FPGA using HDL, then developed a Hardware Abstraction Layer (HAL) on top of it to expose clean, reusable APIs for the on-chip peripherals. The repository includes a minimal BSP, startup code, and demo applications; it’s intended as a learning platform you can fork, modify, and extend—such as by adding I²C/SPI support or porting the design to a different board.
 
 ### What This System Includes
 
@@ -21,7 +17,7 @@ This project implements a fully Micro Controller Unit on a **Basys 3 FPGA develo
 - Industry-standard interconnect system
 
 **Rich Peripheral Set**
-- VGA Display Controller
+- VGA Controller
 - UART
 - Timer
 - GPIO
@@ -44,28 +40,18 @@ The system includes a complete **Snake game** implementation that showcases all 
 - **Interrupt-driven** responsive controls
 - **Game state management** (play, pause, game over)
 
-## Target Hardware: Basys 3 FPGA Board
-
-### Why Basys 3?
-- **Educational focus** - Designed for learning digital design
-- **Affordable** - Under $150, accessible to students
-- **Rich I/O** - VGA, USB, LEDs, switches, 7-segment displays
-- **Adequate resources** - Artix-7 FPGA with plenty of logic and memory
-- **Tool support** - Works with free Vivado WebPACK
-
 ## Development Environment
 
 ### Hardware Design (HDL)
-- **Vivado Design Suite** (free WebPACK edition)
-- **Verilog HDL** for all peripheral implementations
-- **ARM Cortex-M0 DesignStart** IP (free from ARM)
-- **Constraint files** for Basys 3 pin mapping
+- **Vivado Design Suite**
+- **Verilog HDL**
+- **ARM Cortex-M0 DesignStart IP**
 
 ### Software Development
-- **Keil uVision IDE** for embedded development
-- **C and Assembly** programing the SoC
-- **ARM CMSIS** standard for consistent APIs
-- **Custom Hardware Abstraction Layer** for portable code
+- **Keil uVision IDE** 
+- **C and Assembly**
+- **ARM CMSIS**
+- **Custom Hardware Abstraction Layer**
 
 ## Project Structure
 
@@ -88,71 +74,28 @@ Intro_SoC/
 │   ├── core/                      # ARM CMSIS headers
 ```
 
-## Educational Value
-
-### Hardware Concepts
-- **FPGA design methodology** and synthesis
-- **Bus protocols** and system integration
-- **Memory-mapped I/O** and address decoding
-- **Clocking and reset** design
-- **Timing constraints** and closure
-
-### Software Concepts
-- **Embedded C programming** on real hardware
-- **Interrupt programming** and real-time constraints
-- **Hardware abstraction** and driver development
-- **ARM Cortex-M architecture** and instruction set
-- **Memory management** and linker scripts
-
 ## Quick Start Guide
 
 ### Prerequisites
 - Basys 3 FPGA development board
-- Vivado Design Suite (free WebPACK)
-- VGA monitor and USB cable
+- Vivado Design Suite
+- VGA monitor and VGA cable
+- Serail Monitor (Putty, Terra Term)
+- USB cable
 - Keil uVision
 
 ### Running the Demo
-1. **Program FPGA**: Load the provided bitstream using Vivado
-2. **Connect hardware**: VGA monitor and USB cable to PC
-3. **Open terminal**: 9600 baud, 8N1 settings
-4. **Play Snake**: Use W/A/S/D keys to control the snake
-5. **Watch display**: Game graphics appear on VGA monitor
-
-### Building from Source
-1. **Open Vivado project**: `Cortex-M0_SoC.xpr`
-2. **Generate bitstream**: Synthesis and implementation
-3. **Program FPGA**: Download bitstream to board
-4. **Optional**: Modify software and regenerate `code.hex`
+1. Generate the bitstream in Vivado and program it onto the FPGA
+2. Compile the source code in Keil uVision or with your preferred toolchain
+3. Place the compiled hex file (code.hex) in the HDL/AHB_BRAM/ directory
+4. Connect the VGA monitor to the FPGA board
+5. Connect the USB cable from your PC to the FPGA board
+6. Open your preferred terminal software with these settings:
+   - 9600 baud, 8 data bits, no parity, 1 stop bit (8N1)
+7. Press any key to start the game
+8. Use W/A/S/D keys to control the snake
 
 ## Applications and Extensions
-
-### Educational Use
-- **Digital systems courses** - Complete SoC design example
-- **Embedded programming courses** - Real hardware platform
-- **Computer architecture courses** - ARM processor study
-- **FPGA design courses** - Practical implementation project
-
-### Research and Development
-- **Custom peripheral development** - Add SPI, I2C, PWM, etc.
-- **Performance studies** - Analyze bus utilization and timing
-- **Security research** - Implement hardware security features
-- **AI/ML acceleration** - Add custom compute units
-
-### Project Extensions
-- **Custom peripheral development** - Add AHB compataible SPI and I2C peripheral
-- **Sensors**: Interface with temperature, motion, or other sensors
-
-## Professional Relevance
-
-This project demonstrates **industry-standard practices**:
-
-- **ARM processor architecture** - Used in billions of devices
-- **AMBA bus protocols** - Standard in professional SoCs
-- **Hardware abstraction** - Essential for portable embedded software
-- **Interrupt-driven programming** - Required for real-time systems
-- **Memory-mapped I/O** - Universal in embedded systems
-- **FPGA prototyping** - Common in semiconductor development
 
 ## Conclusion
 
@@ -160,3 +103,11 @@ This ARM Cortex-M0 SoC project provides a complete, hands-on introduction to emb
 
 Whether you're a student learning embedded systems, an educator teaching digital design, or a professional exploring FPGA-based prototyping, this project offers a comprehensive platform for understanding how modern embedded systems really work.
 
+This project was great because it gave me the opportunity to delve deeper into:
+- Hardware-software co-design using professional ARM IP
+- Industry-standard bus protocols (AHB-Lite) and memory-mapped I/O
+- Real-time embedded programming with interrupt handling
+- FPGA development using Vivado and Verilog HDL
+- The complete embedded systems development flow from hardware design to application software
+
+In the future I would like to add I2C and SPI support and write more demo programs that will make use of those serial communication protocols. Please feel free to fork this repo and add or customize the hardware or write more application programs!! That is the beauty of this project: you are free to add or change the hardware and, with a few tweaks to the HAL, keep the same software running—so experiment, share what you build, and send a PR with examples and notes for others to learn from!
