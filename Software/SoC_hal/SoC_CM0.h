@@ -90,17 +90,4 @@ typedef struct
 
 /*@}*/ /* end of group CMSDK_CMSIS */
 
-/*
- * ==========================================================================
- * ------------------------- System memory  ---------------------------------
- * ==========================================================================
- */
- 
-
-
-#define RAM_SIZE 					0x20000				// 16 MB of PSRAM on Digilent Board
-
-#define RAM_START 					0x40000
-#define RAM_END						RAM_START + RAM_SIZE
-
 #endif /* SOC_CM0_H*/

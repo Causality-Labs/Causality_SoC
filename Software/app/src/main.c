@@ -1,10 +1,3 @@
-//------------------------------------------------------------------------------------------------------
-// ARM CMSIS and Software Drivers
-// 1)Input from 8-bit switch and output to LEDs
-// 2)Input characters from keyboard (UART) and output to the terminal
-// 3)A counter is incremented every second and displayed on the 7-segment display
-//------------------------------------------------------------------------------------------------------
-
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -18,6 +11,7 @@
 #include "SoC_api.h"
 
 #include "core_cm0.h"
+#include "snake_api.h"
 
 static int score;
 static int gamespeed;
@@ -36,9 +30,6 @@ void Game_Init(void);
 bool Game_Update(void);
 bool Game_Over(void);
 void Game_Close(void);
-void target_gen(void);
-bool check_overlap(void);
-bool is_point_in_target(struct pt p, targ *target);
 
 int main(void)
 {
@@ -97,40 +88,6 @@ int main(void)
     }
 }
 
-static bool is_point_in_target(struct pt p, targ *target)
-{
-    int px = p.x;
-    int py = p.y;
-    int tx = target->point.x;
-    int ty = target->point.y;
-
-    return (px >= tx && px <= tx + 1 &&
-            py >= ty && py <= ty + 1);
-}
-
-void target_gen(void)
-{
-    target.point.x = random(2, 97);
-    target.point.x = target.point.x - target.point.x % 2;
-    delay(111 *  target.point.x);
-
-    target.point.y = random(2, 117);
-    target.point.y = target.point.y - target.point.y % 2;
-
-    return;
-}
-
-bool check_overlap(void)
-{
-    for (uint8_t i = 0; i < snake.node; i++)
-    {
-        if (is_point_in_target(snake.point[i], &target))
-            return true;
-    }
-
-    return false;
-}
-
 bool Game_Over(void)
 {
     char check_key;
@@ -159,10 +116,7 @@ void Game_Close(void)
 {
     clear_screen();
     clear_console();
-
-
-    NVIC_DisableIRQ(Timer_IRQn);
-    NVIC_DisableIRQ(UART_IRQn);
+    stop_interrupts();
 
     return;
 }
@@ -243,8 +197,8 @@ bool Game_Update(void)
 
     if (target.reach == 1) {
         do {
-            target_gen();
-        } while (check_overlap());
+            target_gen(&target);
+        } while (check_overlap(&snake, &target));
 
         target.reach = 0;
         plot_target(target, GREEN);
@@ -252,8 +206,7 @@ bool Game_Update(void)
 
     snake_move(&snake);
 
-    // Snake eats Target
-    if (is_point_in_target(snake.point[HEAD], &target)) {
+    if (snake_ate_target(&snake.point[HEAD], &target)) {
         plot_target(target, BLACK);
         snake.point[snake.node].x = -10;
         snake.point[snake.node].y = -10;

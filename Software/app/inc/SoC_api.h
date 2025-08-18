@@ -1,3 +1,6 @@
+#ifndef SOC_API_H
+#define SOC_API_H
+
 #include <stdbool.h>
 
 #define System_Tick_Frequency                   50000000
@@ -26,25 +29,25 @@
 
 #define HEAD 0
 
-typedef enum {
-    SNAKE_UP,
-    SNAKE_DOWN,
-    SNAKE_LEFT,
-    SNAKE_RIGHT
-} Snake_direction_t;
+// typedef enum {
+//     SNAKE_UP,
+//     SNAKE_DOWN,
+//     SNAKE_LEFT,
+//     SNAKE_RIGHT
+// } Snake_direction_t;
 
-typedef struct {
-    struct pt point;
-    int reach;
-} targ;
+// typedef struct {
+//     struct pt point;
+//     int reach;
+// } targ;
 
 
-typedef struct {
-    struct pt point[N];
-    int node;
-    uint8_t colour;
-    Snake_direction_t direction;
-} Snake;
+// typedef struct {
+//     struct pt point[N];
+//     int node;
+//     uint8_t colour;
+//     Snake_direction_t direction;
+// } Snake;
 
 void random_init(void);
 int8_t random(char min, char max);
@@ -54,9 +57,11 @@ void delay(int value);
 void SoC_init(void);
 void clear_screen(void);
 void clear_console(void);
-void plot_target(targ top_left, uint8_t colour);
-void snake_plot(Snake *snake);
-void snake_move(Snake *snake);
-bool snake_self_collision(Snake *snake);
-bool snake_wall_collision(Snake *snake);
+// void plot_target(targ top_left, uint8_t colour);
+// void snake_plot(Snake *snake);
+// void snake_move(Snake *snake);
+// bool snake_self_collision(Snake *snake);
+// bool snake_wall_collision(Snake *snake);
 void display_score_seven_seg(int score);
+
+#endif /* SOC_API_H*/

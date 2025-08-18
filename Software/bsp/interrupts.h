@@ -1,3 +1,6 @@
+#ifndef INTERRUPTS_H
+#define INTERRUPTS_H
+
 #include "SoC_gpio.h"
 #include "SoC_uart.h"
 #include "SoC_VGA.h"
@@ -12,3 +15,5 @@
 void UART_ISR(void);
 void Timer_ISR(void);
 void GPIO_ISR(void);
+
+#endif /* INTERRUPTS_H */
