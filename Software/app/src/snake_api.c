@@ -149,3 +149,94 @@ static bool is_point_in_target(struct pt *p, targ *target)
     return (px >= tx && px <= tx + 1 &&
             py >= ty && py <= ty + 1);
 }
+
+void display_new_target(targ *target)
+{
+    plot_target(*target, GREEN);
+    target->reach = false;
+
+    return;
+}
+
+void remove_old_target(targ *target)
+{
+    plot_target(*target, BLACK);
+    target->reach = true;
+
+    return;
+}
+
+void add_new_snake_node(Snake *snake)
+{
+    snake->point[snake->node].x = -10;
+    snake->point[snake->node].y = -10;
+    snake->node++;
+
+    snake->point[snake->node].x = -11;
+    snake->point[snake->node].y = -10;
+    snake->node++;
+
+    snake->point[snake->node].x = -12;
+    snake->point[snake->node].y = -10;
+    snake->node++;
+
+    snake->point[snake->node].x = -12;
+    snake->point[snake->node].y = -10;
+    snake->node++;
+
+    return;
+}
+
+bool target_was_eaten(targ *target)
+{
+    return target->reach;
+}
+
+void init_snake_and_target(Snake *snake, targ *target)
+{
+    target->reach = 1;
+    snake->direction = SNAKE_LEFT;
+
+    snake->point[HEAD].x = 60;
+    snake->point[HEAD].y = 80;
+
+    snake->point[HEAD + 1].x = 61;
+    snake->point[HEAD + 1].y = 80;
+
+    snake->point[HEAD + 2].x = 62;
+    snake->point[HEAD + 2].y = 80;
+
+    snake->point[HEAD + 3].x = 62;
+    snake->point[HEAD + 3].y = 80;
+    
+    snake->colour = RED;
+    snake->node = 4;
+
+    return;
+}
+
+void change_snake_direction(Snake *snake, char key)
+{
+    switch (key) {
+        case UP:
+            if (snake->direction != SNAKE_DOWN)
+                snake->direction = SNAKE_UP;
+            break;
+        case RIGHT:
+            if (snake->direction != SNAKE_LEFT)
+                snake->direction = SNAKE_RIGHT;
+            break;
+        case LEFT:
+            if (snake->direction != SNAKE_RIGHT)
+                snake->direction = SNAKE_LEFT;
+            break;
+        case DOWN:
+            if (snake->direction != SNAKE_UP)
+                snake->direction = SNAKE_DOWN;
+            break;
+        default:
+            break;
+    }
+
+    return;
+}

@@ -4,7 +4,7 @@
 #include  "SoC_gpio.h"
 
 extern char key;
-extern int key_pending;
+extern bool key_pending;
 extern int timer_tick;
 
 void UART_ISR(void)
@@ -17,8 +17,8 @@ void UART_ISR(void)
 
 void Timer_ISR(void)
 {
-    if (timer_tick == 0)
-        timer_tick = 1;
+    if (timer_tick == false)
+        timer_tick = true;
 
     timer_irq_clear(); 
 

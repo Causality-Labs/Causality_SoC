@@ -16,12 +16,12 @@
 static int score;
 static int gamespeed;
 static int speed_table[10]= {6, 9, 12, 15, 20, 25, 30, 35, 40, 100};
-static int pause;
-static int snake_has_moved = 0;
+static bool pause = false;
+static bool snake_has_moved = false;
 
 volatile char key = 0;
-volatile int key_pending = 0;
-volatile int timer_tick = 0;
+volatile bool key_pending = false;
+volatile bool timer_tick = false;
 
 targ target;
 Snake snake;
@@ -38,7 +38,7 @@ int main(void)
 
     while(1)
     {
-        if (key_pending == 1) {
+        if (key_pending == true) {
             if (key == PAUSE) {
                 pause = !pause;
 
@@ -49,35 +49,15 @@ int main(void)
             }
 
             if (snake_has_moved) {
-                switch (key) {
-                    case UP:
-                        if (snake.direction != SNAKE_DOWN)
-                            snake.direction = SNAKE_UP;
-                        break;
-                    case RIGHT:
-                        if (snake.direction != SNAKE_LEFT)
-                            snake.direction = SNAKE_RIGHT;
-                        break;
-                    case LEFT:
-                        if (snake.direction != SNAKE_RIGHT)
-                            snake.direction = SNAKE_LEFT;
-                        break;
-                    case DOWN:
-                        if (snake.direction != SNAKE_UP)
-                            snake.direction = SNAKE_DOWN;
-                        break;
-                    default:
-                        break;
-                }
-
-                snake_has_moved = 0;
+                change_snake_direction(&snake, key);
+                snake_has_moved = false;
             }
-            key_pending = 0;
+            key_pending = false;
         }
 
-        if (timer_tick == 1) {
+        if (timer_tick == true) {
             if (Game_Update() == true)
-                timer_tick = 0;
+                timer_tick = false;
             else
             while (1)
             {
@@ -125,7 +105,7 @@ void Game_Init(void)
 {
     clear_screen();
     clear_console();
-    
+
     struct rect rectangle =
     {
         .top_left =     { .x = 0,   .y = 0 },
@@ -142,25 +122,9 @@ void Game_Init(void)
     timer_init((Timer_Load_Value_For_One_Sec/gamespeed), Timer_Prescaler, 1);
     timer_enable();
 
-    target.reach = 1;
-    snake.direction = SNAKE_LEFT;
+    init_snake_and_target(&snake, &target);
 
-
-    snake.point[HEAD].x = 60;
-    snake.point[HEAD].y = 80;
-
-    snake.point[HEAD + 1].x = 61;
-    snake.point[HEAD + 1].y = 80;
-
-    snake.point[HEAD + 2].x = 62;
-    snake.point[HEAD + 2].y = 80;
-
-    snake.point[HEAD + 3].x = 62;
-    snake.point[HEAD + 3].y = 80;
-    
-    snake.colour = RED;
-    snake.node = 4;
-    pause = 0;
+    pause = false;
 
     printf("\n------- Snake Game --------");
     printf("\nCenter btn ..... hard reset");
@@ -184,7 +148,7 @@ void Game_Init(void)
     }
 
     printf("\nScore = %d\n", score);
-    timer_tick = 0;
+    timer_tick = false;
     start_interrupts();
 
     return;
@@ -192,39 +156,23 @@ void Game_Init(void)
 
 bool Game_Update(void)
 {
-    if (pause == 1)
+    if (pause == true)
         return true;
 
-    if (target.reach == 1) {
+    if (target_was_eaten(&target)) {
         do {
             target_gen(&target);
         } while (check_overlap(&snake, &target));
 
-        target.reach = 0;
-        plot_target(target, GREEN);
+        display_new_target(&target);
     }
 
     snake_move(&snake);
 
     if (snake_ate_target(&snake.point[HEAD], &target)) {
-        plot_target(target, BLACK);
-        snake.point[snake.node].x = -10;
-        snake.point[snake.node].y = -10;
-        snake.node++;
+        remove_old_target(&target);
+        add_new_snake_node(&snake);
 
-        snake.point[snake.node].x = -11;
-        snake.point[snake.node].y = -10;
-        snake.node++;
-
-        snake.point[snake.node].x = -12;
-        snake.point[snake.node].y = -10;
-        snake.node++;
-
-        snake.point[snake.node].x = -12;
-        snake.point[snake.node].y = -10;
-        snake.node++;
-
-        target.reach = 1;
         score++;
 
         printf("\nScore = %d\n", score);
@@ -255,7 +203,7 @@ bool Game_Update(void)
 
     snake_plot(&snake);
 
-    snake_has_moved = 1;
+    snake_has_moved = true;
     return true;
 }
 
