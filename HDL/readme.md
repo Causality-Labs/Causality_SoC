@@ -1,33 +1,13 @@
 # HDL Implementation
 
-This directory contains the complete Verilog HDL implementation of the ARM Cortex-M0 System-on-Chip (SoC), targeting the Basys 3 FPGA development board. The design follows industry-standard practices using the AMBA AHB-Lite bus protocol to create a professional embedded system.
+This directory contains the complete Verilog HDL implementation of the Causality SoC, targeting the Basys 3 FPGA development board. The design follows industry-standard practices using the AMBA AHB-Lite bus protocol to create a professional embedded system.
 
 ## System Architecture Overview
 
 The SoC is built around a **hierarchical, modular design** that demonstrates real-world embedded system architecture:
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                     AHBLITE_SYS.v (Top Level)                  │
-│  ┌─────────────────┐    ┌─────────────────────────────────────┐ │
-│  │   ARM Cortex-M0 │    │          AHB-Lite Bus               │ │
-│  │   DesignStart   │◄──►│     (AHBDCD + AHBMUX)              │ │
-│  │   INTEGRATION   │    │                                     │ │
-│  └─────────────────┘    └─────────────┬───────────────────────┘ │
-│                                       │                         │
-│                     ┌─────────────────┼─────────────────────────┤
-│                     │                 │                         │
-│  ┌──────────────────▼──┐  ┌───────────▼──┐  ┌─────────────────▼─┐ │
-│  │    AHB2BRAM         │  │   AHBVGA     │  │    AHBUART        │ │
-│  │  (Memory Controller)│  │ (VGA Display)│  │ (Serial Comm)     │ │
-│  └─────────────────────┘  └──────────────┘  └───────────────────┘ │
-│                                                                  │
-│  ┌─────────────────────┐  ┌──────────────┐  ┌───────────────────┐ │
-│  │    AHBTIMER         │  │   AHBGPIO    │  │   AHB7SEGDEC      │ │
-│  │ (Timer/Counter/PWM) │  │ (GPIO I/O)   │  │ (7-Segment Disp)  │ │
-│  └─────────────────────┘  └──────────────┘  └───────────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
-```
+![Hardware Architecture](../docs/SoC_HW.png)
+
 ## Memory Map Summary
 
 | Peripheral | Base Address| Description |
