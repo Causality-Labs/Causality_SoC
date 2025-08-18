@@ -31,6 +31,9 @@ This project is my take on the Introduction to SoC course offered by Arm, which 
 
 ## Demonstration Software: Snake Game
 
+
+![Snake Game](docs/snake_game_demo.png)
+
 The system includes a complete **Snake game** implementation that showcases all system capabilities:
 
 ### Game Features
