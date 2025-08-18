@@ -5,11 +5,11 @@
 //  File Revision       : 1.60
 //
 //  ----------------------------------------------------------------------------
-//  Purpose             : Basic AHBLITE Internal Memory Default Size = 16KB
+//  Purpose             : Basic AHBLITE Internal Memory Default Size = 128 KB
 //                        
 //  --========================================================================--
 module AHB2MEM
-#(parameter MEMWIDTH = 14)					// SIZE[Bytes] = 2 ^ MEMWIDTH[Bytes] = 2 ^ MEMWIDTH / 4[Entries]
+#(parameter MEMWIDTH = 17)					// SIZE[Bytes] = 2 ^ MEMWIDTH[Bytes] = 2 ^ MEMWIDTH / 4[Entries]
   (
   //AHBLITE INTERFACE
   //Slave Select Signals
