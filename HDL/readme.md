@@ -70,7 +70,7 @@ The SoC is built around a **hierarchical, modular design** that demonstrates rea
 ## Peripherals
 
 ### 4. Memory Controller (`AHB_BRAM/AHB2BRAM.v`)
-- **Configurable size**: Default 16KB, expandable to 1GB via parameter
+- **Configurable size**: Default 128KB
 - **Program loading**: Supports `code.hex` file initialization
 - **Full AHB compliance**: Proper address/data phase handling
 - **Byte-level access**: Supports 8-bit, 16-bit, and 32-bit transactions
