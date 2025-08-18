@@ -6,27 +6,7 @@ This directory contains the complete embedded software stack for the ARM Cortex-
 
 The software follows a **hierarchical design** with clean separation between hardware and application:
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                     Application Layer                           │
-│                    Snake Game (main.c)                          │
-│                         │                                       │
-│              ┌──────────▼──────────┐                            │
-│              │   SoC API Layer     │                            │
-│              │   (SoC_api.c)       │                            │
-│              └──────────┬──────────┘                            │
-│                         │                                       │
-│  ┌─────────────────────▼────────────────────────────────────┐   │
-│  │        Hardware Abstraction Layer (SoC_hal/)             │    │
-│  │  VGA • UART • Timer • GPIO • 7-Segment                   │    │
-│  └─────────────────────┬────────────────────────────────────┘   │
-│                         │                                       │
-│  ┌─────────────────────▼────────────────────────────────────┐   │
-│  │     Board Support Package (bsp/) + ARM CMSIS (core/)     │    │
-│  │  Interrupts • Startup • Standard Library • ARM Core      │    │
-│  └──────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────┘
-```
+![Software Architecture](../docs/SoC_SW.png)
 
 ## Key Components
 
