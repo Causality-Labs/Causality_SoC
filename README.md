@@ -1,6 +1,6 @@
 # Causality SoC
 
-This project is my take on the Introduction to SoC course offered by Arm, which you can find here: https://www.arm.com/resources/education/education-kits/introduction-to-soc. After completing the course, I designed a custom SoC on a Digilent Basys 3 FPGA using HDL, then developed a Hardware Abstraction Layer (HAL) on top of it to expose clean, reusable APIs for the on-chip peripherals. The repository includes a minimal BSP, startup code, and demo applications; it’s intended as a learning platform you can fork, modify, and extend—such as by adding I²C/SPI support or porting the design to a different board.
+The Causality SoC is my personal project inspired by Arm’s Introduction to SoC course which you can find here: https://www.arm.com/resources/education/education-kits/introduction-to-soc . After completing the course, I designed a custom SoC on the Digilent Basys 3 FPGA using HDL, and built a Hardware Abstraction Layer (HAL) on top of it to provide clean, reusable APIs for the on-chip peripherals. The goal of this project was to create a flexible and easy to use SoC that can be adapted for a wide range of applications. Developers can extend the system by adding new peripherals in Verilog or VHDL, writing corresponding drivers, and integrating them into the HAL. This approach enables endless possibilities—whether it’s adding I²C/SPI controllers, integrating a minimal RTOS, or developing custom applications that run directly on the SoC. Feel free to fork this repository and create your own personal projects 
 
 ### What This System Includes
 
@@ -32,7 +32,7 @@ This project is my take on the Introduction to SoC course offered by Arm, which 
 ## Demonstration Software: Snake Game
 
 
-![Snake Game](docs/snake_game_demo.png)
+![Snake Game](docs/snake_game.gif)
 
 The system includes a complete **Snake game** implementation that showcases all system capabilities:
 
@@ -113,4 +113,4 @@ This project was great because it gave me the opportunity to delve deeper into:
 - FPGA development using Vivado and Verilog HDL
 - The complete embedded systems development flow from hardware design to application software
 
-In the future I would like to add I2C and SPI support and write more demo programs that will make use of those serial communication protocols. Please feel free to fork this repo and add or customize the hardware or write more application programs!! That is the beauty of this project: you are free to add or change the hardware and, with a few tweaks to the HAL, keep the same software running—so experiment, share what you build, and send a PR with examples and notes for others to learn from!
+In the future I would like to add I2C, SPI nd write more demo programs that will make use of those serial communication protocols or a minimal RTOS. Please feel free to fork this repo and add or customize the hardware or write more application programs!! That is the beauty of this project: you are free to add or change the hardware and, with a few tweaks to the HAL, keep the same software running—so experiment, share what you build, and send a PR with examples and notes for others to learn from!
