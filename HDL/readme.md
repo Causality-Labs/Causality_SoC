@@ -2,6 +2,8 @@
 
 This directory contains the complete Verilog HDL implementation of the Causality SoC, targeting the Basys 3 FPGA development board. The design follows industry-standard practices using the AMBA AHB-Lite bus protocol to create a professional embedded system.
 
+![FPGA Development board](../docs/basys3.jpg)
+
 ## System Architecture Overview
 
 The SoC is built around a **hierarchical, modular design** that demonstrates real-world embedded system architecture:
